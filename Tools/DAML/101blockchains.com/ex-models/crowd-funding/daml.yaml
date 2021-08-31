@@ -1,0 +1,13 @@
+sdk-version: 1.2.0
+name: crowd-funding
+version: 1.0.0
+source: daml
+parties:
+- Issuer
+- Originator
+- A
+- B
+- C
+dependencies:
+- daml-prim
+- daml-stdlib

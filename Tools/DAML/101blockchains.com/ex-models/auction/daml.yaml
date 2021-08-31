@@ -1,0 +1,11 @@
+sdk-version: 1.2.0
+name: auction
+source: daml
+parties:
+  - Seller
+  - Alice
+  - Bob
+version: 1.0.0
+dependencies:
+  - daml-prim
+  - daml-stdlib

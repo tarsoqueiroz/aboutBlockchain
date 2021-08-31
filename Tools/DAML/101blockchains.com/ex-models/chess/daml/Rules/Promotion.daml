@@ -1,0 +1,20 @@
+-- Copyright (c) 2019 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+module Rules.Promotion where
+
+import Types
+
+import Rules.Data
+
+-- | Checks whether a promotion is being performed and returns the
+-- | new piece type
+checkPromotion : MoveData -> E PieceType
+checkPromotion md = case md.move.promote of
+    Some t -> do
+      assertMsg "Promotion not allowed" (md.piece.tp == Pawn &&
+        (md.state.player == Black && md.to._2 == 0) ||
+        (md.state.player == White && md.to._2 == 7)
+        )
+      return t
+    _ -> return $ md.piece.tp

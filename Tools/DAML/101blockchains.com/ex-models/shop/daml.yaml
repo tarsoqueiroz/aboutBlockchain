@@ -1,0 +1,13 @@
+sdk-version: 1.2.0
+name: shop
+version: 1.0.0
+source: daml
+parties:
+- Issuer
+- Producer
+- Owner
+- Vendor
+- User
+dependencies:
+- daml-prim
+- daml-stdlib

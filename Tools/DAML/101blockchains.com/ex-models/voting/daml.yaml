@@ -1,0 +1,13 @@
+sdk-version: 1.2.0
+name: voting
+version: 1.0.0
+source: daml
+parties:
+- Government
+- A
+- B
+- C
+- Proposer
+dependencies:
+- daml-prim
+- daml-stdlib

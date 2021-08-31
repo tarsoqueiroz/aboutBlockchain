@@ -1,0 +1,11 @@
+sdk-version: 1.2.0
+name: ex-issuertoken
+source: daml
+parties:
+  - Issuer
+  - Sally
+  - Rebecca
+version: 0.0.1
+dependencies:
+  - daml-prim
+  - daml-stdlib

@@ -1,0 +1,14 @@
+sdk-version: 1.2.0
+name: broadcast
+version: 1.0.0
+source: daml
+parties:
+- Alice
+- Subscriber1
+- Subscriber2
+- Subscriber3
+- Subscriber4
+- Subscriber5
+dependencies:
+- daml-prim
+- daml-stdlib

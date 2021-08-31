@@ -1,0 +1,27 @@
+-- Copyright (c) 2019 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+module Rules.Util where
+
+import Types
+import Rules.Data
+
+pathBetween : IntCoord -> IntCoord -> Either Text [IntCoord]
+pathBetween i1@(c1, r1) i2@(c2, r2)
+  | c1 > c2 = do
+    pb <- pathBetween (flipCol i1) (flipCol i2)
+    return $ map flipCol pb
+  | r1 > r2 = do
+    pb <- pathBetween (flipRow i1) (flipRow i2)
+    return $ map flipRow pb
+  | c1 == c2 = Right $ map (\i -> (c1, r1 + i)) [1..(r2 - r1 - 1)]
+  | r1 == r2 = Right $ map (\i -> (c1 + i, r1)) [1..(c2 - c1 - 1)]
+  | r2 - r1 == c2 - c1 = Right $ map (\i -> (c1 + i, r1 + i)) [1..(c2 - c1 - 1)]
+  | otherwise = Left "Not a straight path"
+
+-- | Updates the `coord` and `moved` fields on a `Piece`
+movePiece : Coord -> Piece -> Piece
+movePiece t p =
+  p with
+    coord = t
+    moved = True

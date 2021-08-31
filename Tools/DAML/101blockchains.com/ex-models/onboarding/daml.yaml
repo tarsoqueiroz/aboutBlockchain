@@ -1,0 +1,11 @@
+sdk-version: 1.2.0
+name: onboarding
+version: 1.0.0
+source: daml
+parties:
+- HR
+- Alice
+- Supervisor
+dependencies:
+- daml-prim
+- daml-stdlib

@@ -1,0 +1,12 @@
+sdk-version: 1.2.0
+name: approval-chain
+version: 1.0.0
+source: daml
+parties:
+- Originator
+- A
+- B
+- C
+dependencies:
+- daml-prim
+- daml-stdlib
