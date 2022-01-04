@@ -240,7 +240,105 @@ In the next chapter, we’ll look at how Hyperledger Indy, Aries and Ursa enable
 
 How do we fix the issue of trust on the Internet? In the last chapter, we talked about a number of challenges with the current state of identity on the Internet. In this chapter, we’ll talk about solutions that are becoming available that will add that missing layer of trust. To do that, we will move from paper credentials discussed in the last chapter to verifiable credentials—credentials we can use (and trust!) online. We will also introduce the important concepts of self-sovereign identity (SSI) and trust over IP (ToIP). Lastly, we will explore the technology that enables verifiable credentials (for example, decentralized identifiers (DIDs) and agents), and how all of this together makes the Internet a much more trusted place.
 
+### Learning Objectives
+
+By the end of this chapter you should:
+
+  - Understand how the verifiable credentials model works.
+  - Be familiar with the core concepts of self-sovereign identity and the aspects of Indy, Aries and Ursa architecture that enable SSI.
+  - Know what the term "trust over IP" means.
+  - Know what a DID is and does.
+  - Be familiar with the term zero-knowledge proof (ZKP) and selective disclosure.
+  - Understand why blockchain is important for self-sovereign identity.
+
 ### The Verifiable Credentials (VC) Model
+
+As we talked about in Chapter 1, a credential is (formally) an attestation of qualification, competence, or authority issued to an entity by a third party with a relevant or de facto authority or assumed competence to do so. Examples of paper versions of credentials are a driver’s license, passport and university degree. What if we could get credentials from the same sources as our paper credentials and use them online in a fully trusted manner both for the holder of the credential and the person or organization verifying the credential? Something digital that we can trust way more than just a scan of a piece of paper.
+
+The Hyperledger projects, Indy, Aries and Ursa, which we will talk about in upcoming chapters, are tools and libraries that allow for the development of independent digital identities rooted on blockchains or other distributed ledgers. They help bring about the possibility of building applications with a solid digital foundation of trust by enabling the **verifiable credentials model**. 
+
+![The Verifiable Credentials Model](./images/The_Verifiable_Credentials_Model.png)
+
+For identity, verifiable credentials are digital, cryptographically-protected data from authorities that you can use to prove you are you! With Indy, the data can be used by their holder to generate privacy-preserving cryptographic zero-knowledge proofs (ZKPs—we will talk about these shortly) that can be checked by a verifier.
+
+  > **NOTE:** For the more technically inclined, credentials are JSON docs, constructed and cryptographically signed by an issuer and countersigned by the holder.
+
+![A Holder Will Generate a Presentation that Will Be Checked By Verifier](./images/A_holder_will_generate_a_presentation_that_will_be_checked_by_a_verifier.png)
+
+### Verifiable Credentials (2)
+
+Referring to the following illustration from the World Wide Web Consortium (W3C), there is an **issuer**, a **holder** and a **verifier**, just like in the paper credentials model. Unlike the paper credential model, which depends on the skill of the verifier to recognize an altered or forged credential, the verifiable credentials model includes a **verifiable data registry**—containing cryptographic keys and identifiers—that enables the proving of the data. That’s the blockchain part of verifiable credentials.
+
+![The W3C Verifiable Credentials Model](./images/The_W3C_Verifiable_Credentials_Model_updated.png)
+
+Compared to the paper credentials model that we talked about in the last chapter, verifiable credentials are far more secure. The verifier is not a person trying to identify a forged document. Instead, if the cryptographic verification succeeds, the verifier can be certain of the validity of the data—those same three attributes proven when verifying a paper credential. That means that the problem of whether the verifier trusts the holder more or less goes away. The holder cannot forge the cryptography protecting the verifiable credentials and so the data acquired can be accepted without further concern.
+
+However, there does remain a challenge with a verifiable credential—and it's actually the same thing with a paper credential:
+
+_Do you trust the issuer and the process by which the issuer decided to issue the credential?_
+
+To trust the information in a credential, it is necessary that the verifier trust the issuer and that the issuer’s processes are carried out with integrity. For an official government-issued identity document (driver’s license, passport, etc.) that might be an easy decision. In many cases, the verifier will require the holder to present credentials only from issuers known to the verifier.
+
+But what about use cases when the issuers may be from anywhere in the world, such as a university transcript? For example, when you get a verifiable presentation from Faber College that says Alice has received a degree and you verify the presentation, you will know that Faber did indeed issue the credential to Alice, that Alice did not tamper with it and it’s not been revoked. But is Faber College an authorized (and by whom?) degree-issuing entity or an unregulated diploma mill? Does it show that Alice legitimately earned her degree or did she pay $100 to be issued that degree? These same questions come up with both paper and verifiable credentials. However, with verifiable credentials some interesting options become available for automating the research into the “should we trust the issuer?” question.
+
+### Credentials and Claims/Proofs and Presentations
+
+You probably noticed that in the previous sections we used the terms **credential** and **claim** seemingly interchangeably. Actually, we were quite intentional about it. Claims are assertions about a person (or business).
+
+For example:
+
+  - "The name of the holder is Bob. He was born on June 18, 2000"
+
+or,
+
+  - "Cloud Compass Computing was incorporated in 2011."
+
+A credential is made up of a set of individual claims. For example, in the case of a driver’s license, the claims would be a person’s name, address, height, weight, hair color, driver’s license number and so on.
+
+![Claims versus Credential](./images/Claims_versus_Credential.png)
+
+In all uses of a verifiable credential, what is issued is a credential. However, in some implementations, when a credential is presented the credential is proven, while in others (including in Hyperledger Indy), the claims within the credential are proven individually. As we’ll see shortly when we talk about selective disclosure, this subtle difference can be quite important!
+
+Another pair of terms that might seem to be used interchangeably are **proof** and **presentation**. A proof is evidence of the claim (for example, a birth certificate, passport or driver’s license, or in the case of a business, incorporation papers). In the early days of Indy, the term “proof” was used when talking about a verifier requesting verifiable (signed) claims from a holder and the holder providing those claims to the verifier. Presentation was selected for essentially the same thing by the W3C Credentials Community Group and is used in the W3C Verifiable Credentials data model specification. This was done because in the W3C verifiable credential data model, “proof” is a more generic term for the cryptographic **signatures** across any data—for example, the data in a credential or in a presentation.
+
+As such, we mostly use “presentation” in this course to refer to the verifiable data received by a verifier from a holder. However, at times we may use “proof” as well. For example, we’ll often use the phrase “present a proof,” which sounds a little better than “present a presentation.” For developers, recognizing both terms in context is important because the underlying Indy and Aries source code uses both terms as well.
+
+### Uses and Impact of Verifiable Credentials
+
+So what does the availability of verifiable credentials mean? Well, in the past, you have probably shared identity attributes online as text (such as your name, address or government ID) or perhaps shared a paper credential you were given by scanning it and uploading it to an online service. Verifiable credentials are very different because of the cryptography used to secure the data such that once verified, the information can be trusted to be authentic. That is really powerful!
+
+For example:
+
+  - Instead of typing in your name, address and government ID, you provide a presentation of that information from verifiable credentials issued to you by an authority trusted by the verifier. This saves you typing in the data, and the verifier can automatically accept the claims in the presentation (if they trust the issuer) without any further checking, saving them money and time.
+  - Anyone that knows your government ID (the string of numbers) would not be able to impersonate you on a site that checks verifiable credentials because the information they have does not come from a verifiable credential issued by the government.
+  - A doctor can be issued a professional accreditation credential from the relevant authority (e.g., the College of Physicians and Surgeons) and the claims verified (and trusted) by medical facilities in real-time. Should the doctor lose his or her accreditation, the credential can be revoked, which would be immediately in effect. This would hold true for any credentialled profession be it lawyers, engineers, nurses, tradespeople, real estate agents and so on.
+
+Since this course was first introduced in November 2019, the world has changed. A global pandemic—and the ensuing rollout of vaccines—has introduced the idea of people being able to prove they have been vaccinated as a way to once again be able to travel, attend a concert, etc. A secure, digital record issued by a known authority that verifies that someone has been vaccinated is appealing, but not without its risks in the areas of equity, privacy and security. Enabling citizens to prove their vaccination status in a privacy preserving, secure manner, without revealing any more data than is necessary—such as can be done with verifiable credentials—substantially reduces that risk. As a result, the “proof of vaccination” use case has brought the idea of verifiable credentials into the mainstream. We will discuss this use case in several sections of the course.
+
+The verifiable credential model has other important ramifications:
+
+  - Your verifiable credentials are issued to you, stored in your digital wallet, and you decide when and where you want to use them. That improves your privacy—you are in control of when and with whom you share your information.
+  - Verifiable presentation data is proven without needing to call back to the issuer. Just as when you use your driver’s license to prove your age without a call back to the government, there is no need to call back to the government when you use the verifiable credential version of your driver’s license.
+    - Instead of getting the data directly from the issuer, the data from the issuer comes from the holder, and the cryptographic material to verify the authenticity of the data comes from the blockchain.
+    - This reduces the number of integrations that have to be implemented between issuers and verifiers. Imagine if every company needed to integrate with every degree-issuing institution to see if a job applicant’s claim of a degree was valid? That’s a lot of interfaces to be built!
+  - Verifiable credentials go beyond identity to enable the digitization of almost any paper-based verification process. For example, regulatory processes that are currently implemented with paper submissions that are manually verified can be reworked to use verifiable credentials that provide authenticity (supposedly) achieved with paper through human review, using data that can be processed automatically.
+
+### Paper Verifiable Credentials
+
+So far, we’ve talked about paper credentials (a physical driver’s license or passport) and also about new verifiable credentials (that you store in your digital wallet). The race for a credential related to being able to prove receipt of a COVID-19 vaccination or negative test has led to the idea of a “paper verifiable credential.” While digital credentials are appealing, there will be in every nation a proportion of the population that does not have access to digital tools such as a smartphone. To empower that population, one idea that has been proposed is to use a W3C standard verifiable credential in a form that can be printed onto a piece of paper that it is impossible to forge. Photoshop will not help you make your own Dark Web “proof of vaccination” verifiable credential!
+
+VCs on paper can be done in a couple of ways. If possible, the credential is embedded into a QR code to be scanned. The “if possible” comes into play because the capacity of a QR code (especially a printed one) is limited to about 400-500 bytes. Any more than that and the QR code is so dense that it can’t be read by a mobile phone camera. The density issue with QR codes is demonstrated in the image below. This restriction forces a balance between that data needed in the verifiable credential with the number of bytes in its presentation. For context, the first “sample” presentation in the W3C Verifiable Credential Specification has about 1000 characters in it **_before_** any data about the verifiable credential subject is added! There are ways to compress the number of bytes in the credential (such as using something called [Concise Binary Object Representation](https://cbor.io/), or CBOR), so it is possible, but the amount of data is still limited.
+
+![QR codes](./images/QR_codes.png)
+
+QR Codes, one with the URL of this course (114 characters),
+the second with the text of the next paragraph (332 characters)
+
+Alternatively, the QR code can contain just a URL to a web service that in turns returns the presentation. This gets around the size of the presentation issue, but there are drawbacks, including that the URL must be unique per credential, and the issuer of the credential knows each time a credential is used. Those issues can be mitigated, but they must be considered in any implementation.
+
+There are also privacy trade-offs in using paper verifiable credentials. The primary concern is that verifiers of paper credentials get a machine-read, unique identifier for the credential, and hence, a globally unique identifier for the person presenting the credential. This is a correlating identifier that verfiers can use in the same way that surveillance tracking is done in browsers. Further, if personal information is included in the credential (especially if it is also printed in text), anyone finding such a document can see that data—a more likely scenario for a “one-time use” piece of paper than for something with known ongoing value such as a passport. A solution to that is to include only partially identifying data (e.g., part of the name or date of birth) such that there is enough to bind the holder to another document (e.g., a passport), but not enough to uniquely identify the person if the document is lost.
+
+Paper verifiable credentials to eliminate forged documents without requiring everyone to use a smart device is an appealing approach—but the privacy implications must be kept in mind. Further, since the “presentation” of the verifiable credential is fixed at the time it is issued, there is no way to use selective disclosure, or for the verifier to ask for anything other than what the holder has on paper. So, while some of the verifiable credential capabilities are possible, a lot of the power is lost.
 
 ### Self-Sovereign Identity (SSI)
 
