@@ -342,19 +342,298 @@ Paper verifiable credentials to eliminate forged documents without requiring eve
 
 ### Self-Sovereign Identity (SSI)
 
+**What Is Self-Sovereign Identity?**
+
+Self-sovereign identity (SSI) is a term you may have heard in connection with the Hyperledger identity projects, Indy, Aries and Ursa. Together, these Hyperledger capabilities can be the basis for accomplishing SSI. So what is SSI—and what isn’t?
+
+![There is No Central Authority with SSI](./images/There_is_No_Central_Authority_with_SSI.png)
+
+*There is No Central Authority with SSI*
+
+SSI is the idea that you control your own data, you control when and how it is provided to others, and when it is shared, it is done so in a trusted way. With SSI, there is no central authority holding your data that passes it on to others upon request. And because of the underlying cryptography and blockchain technology, SSI means that you can present claims about your identity and others can verify it with cryptographic certainty.
+
+SSI is not about you self-asserting information about yourself and demanding that everyone else accept it as fact. Recall that the verifiable credentials you receive and present to verifiers come from others and their usefulness relies on the trust verifiers have in the credential issuers. If you want, you can issue credentials to yourself ("I am the Queen of England"), but verifiers might not trust you as an issuer.
+
+Drummond Reed, identity guru and Founding Trustee of the Sovrin Foundation, describes self-sovereign identity as:
+
+*"Lifetime portable identity for any person, organization, or thing that does not depend on any centralized authority and can never be taken away."*
+
+Sounds like something to strive for, doesn’t it?
+
+![Self-Sovereign Identity Definition by Drummond Ree](./images/Self-Sovereign_Identity_Definition_by_Drummond_Reed.png)
+
+*Self-Sovereign Identity Definition by Drummond Reed*
+
+### The Principles of SSI
+
+The Sovrin Foundation is a private-sector, international non-profit that was established to govern and operate the Sovrin Identity Network, a public, permissioned distributed ledger purpose built (based on Hyperledger Indy) for identity. The mission of the Sovrin Foundation is to create the Internet’s long-missing trust layer and provide a global public utility for digital identity to people, organizations, and things. In addition to the mechanics of operating a global instance of Hyperledger Indy, Sovrin has brought together many leaders and deep thinkers from the self-sovereign identity community to collaborate on a series of foundational principles and governance and glossary documents. From that work, the Sovrin Foundation has published these [12 principles of self-sovereign identity](https://sovrin.org/principles-of-ssi/):
+
+| Principle | What It Means |
+| --- | --- |
+| Representation | An SSI ecosystem shall provide the means for any entity—human, legal, natural, physical or digital—to be represented by any number of digital identities. |
+| Interoperability | An SSI ecosystem shall enable digital identity data for an entity to be represented, exchanged, secured, protected, and verified interoperably using open, public, and royalty-free standards. |
+| Decentralization | An SSI ecosystem shall not require reliance on a centralized system to represent, control, or verify an entity’s digital identity data. |
+| Control & Agency | An SSI ecosystem shall empower entities who have natural, human, or legal rights in relation to their identity (“Identity Rights Holders”) to control usage of their digital identity data and exert this control by employing and/or delegating to agents and guardians of their choice, including individuals, organizations, devices, and software. |
+| Participation | An SSI ecosystem shall not require an identity rights holder to participate. |
+| Equity and Inclusion | An SSI ecosystem shall not exclude or discriminate against identity rights holders within its governance scope. |
+| Usability, Accessibility, and Consistency | An SSI ecosystem shall maximize usability and accessibility of agents and other SSI components for identity rights holders, including consistency of user experience. |
+| Portability | An SSI ecosystem shall not restrict the ability of identity rights holders to move or transfer a copy of their digital identity data to the agents or systems of their choice. |
+| Security | An SSI ecosystem shall empower identity rights holders to secure their digital identity data at rest and in motion, to control their own identifiers and encryption keys, and to employ end-to-end encryption for all interactions. |
+| Verifiability and Authenticity | An SSI ecosystem shall empower identity rights holders to provide verifiable proof of the authenticity of their digital identity data. |
+| Privacy and Minimal Disclosure | An SSI ecosystem shall empower identity rights holders to protect the privacy of their digital identity data and to share the minimum digital identity data required for any particular interaction. |
+| Transparency | An SSI ecosystem shall empower identity rights holders and all other stakeholders to easily access and verify information necessary to understand the incentives, rules, policies, and algorithms under which agents and other components of SSI ecosystems operate. |
+ 
+A number of these principles are technical in nature and are enabled by Indy, Aries and Ursa. Some are about how those technical projects are managed—for example, transparency by using open source software based on well-defined standards. Others are about how the technology is used, and while Indy, Aries and Ursa focus on making it easy for entities to implement SSI solutions, governance—such as the European Union’s General Data Protection Regulation (GDPR)—is still necessary.
+
 ### Decentralized Identifiers (DIDs)
+
+**What Are Decentralized Identifiers?**
+
+While verifiable credentials are an important component of SSI, a thing called a **decentralized identifier** (DID) is a key enabler for verifiable credentials. DIDs are a new type of identifier that is in the process of becoming a World Wide Web Consortium (W3C) [standard](https://www.w3.org/2019/did-wg/). As we discussed, the verifiable credential model requires a decentralized ecosystem in order to work. Such an ecosystem is brought about with DIDs and agents (discussed further in the chapter).
+
+DIDs are a special kind of identifier that are created by their owner, independent of any central authority. Per the [DID specification](https://w3c.github.io/did-spec/), a DID looks like the following and is similar to an HTTP address but used differently.
+
+**What does a DID look like?**
+
+![An Example of a DID Updated](./images/LFS172x_CourseGraphics-02.png)
+
+*An Example of a DID*
+
+> **NOTE:** This section gets a little technical, but don’t worry, we’ll go through this and then come back to what DIDs mean from a business perspective.
+
+DIDs are:
+
+  - A new type of uniform resource identifier (URI).
+  - Created by anyone at any time.
+  - Globally unique.
+  - Highly available.
+  - Cryptographically verifiable.
+
+What does all that mean? Let’s go through each of those attributes in turn:
+
+  - Like the URLs (universal resource locator) that we are familiar with (such as the one for this web page that is in the address field of your browser), DIDs can be resolved. When we pass a valid DID to a piece of software called a DID Resolver, it works like a browser given a URL, resolving the identifier (URL or DID) and returning a document. However, instead of a browser returning a web page, a **DID Resolver** returns a **DID Document** (DIDDoc). A DIDDoc is a JSON document whose format is defined in the DID specification. We’ll talk about the elements of a DIDDoc in a moment. A
+  - DID can be created by anyone, not just a central service such as a Certificate Authority (CA). People, organizations and things can all create, publish and share DIDs. Further, at any time, the controller of the DID (usually the creator) can update the DID—change the DIDDoc that is returned when resolving the DID. That ability can be important in certain situations.
+  - That DIDs are globally unique means that properly generated, each DID is unique across the globe. The “properly generated” caveat means that if you follow the rules for creating a specific type of DID, it will be globally unique. That’s the type of detail that Hyperledger Indy takes care of for you.
+  - Highly available means that DIDs can be resolved even if some servers are down. Since DIDs are often resolved by reading from a blockchain, and there can be many copies of a given blockchain on servers across the world, DIDs are highly available. Put another way, DIDs are not susceptible to a central implementation with a single source of failure.
+  - Cryptographically verified means that the control of a DID can be verified by asking the DID controller (the person, organization or thing that created the DID) to prove their control over the DID by having them prove control of a private key that is related to a public key.
+
+This last point brings us to what is in the DIDDoc. Notably, a DIDDoc contains (usually) public keys whose private keys are held by the entity that controls the DID, and (usually) service endpoints that enable communication with that entity. This means that with a DID, you can:
+
+  - Resolve a DID to get a DIDDoc.
+  - Within the DIDDoc, find a public key and an endpoint for the entity that controls the DID.
+  - Use the endpoint to send a message to that entity.
+  - In the message, ask them for proof they have the private key related to the public key.
+    - Since often a public key in the DIDDoc is used to encrypt the message sent, just being able to respond to the message is “proof” of control of the DID. Without the private key they could not have decrypted the message.
+    - What the sent message might ask is that the controller of the DID provide a verifiable credential presentation.
+  - Receive back the proof.
+  - Verify that proof.
+
+### DIDs from a Business Perspective
+
+OK, we’ve seen technically what DIDs are, but why do we care? There are several characteristics of DIDs that are crucial from an SSI and verifiable credentials perspective.
+
+### DIDs from a Business Perspective: User Control
+
+DIDs are identifiers that you create and share under your control, which is a core tenant of SSI. Most identifiers that you use today are created or controlled by someone else:
+
+  - your government ID
+  - your phone number or email address
+  - your account at a particular website.
+
+If a central authority decides to take that identification away from you, they can remove your ability to use it. Since you created a DID and hold the private key(s) for it, only you can “delete” the DID. A DID (and DIDDoc) on a blockchain can never be removed, so “deleting” a DID really means no longer responding to requests for proof of control of the DID. Technically, you can update the DIDDoc to delete the public key(s), but assuming earlier versions of the DIDDoc are on a blockchain, those earlier versions are still available.
+
+### DIDs from a Business Perspective: Provable
+
+There are no easy, trusted ways for you to prove your control over commonly used identifiers today. From the list of identifiers above, the only ones that you are commonly asked to prove control over are your email address and phone number, and those have become prime targets for hackers, often by attacking the central authority that gave you the identifier. The association of public/private keypairs with a DID makes ongoing proof of control trivial.
+
+As we’ve talked about, one of the attributes proven with a verifiable credential presentation is the identity of the issuer. In fact, what is proven is just the public DID of the issuer and, because of the characteristics of DIDs, that’s enough. Using the DID, the verifier can retrieve the DIDDoc and public keys to verify signatures and (if necessary) connect to the issuer and get information about who the issuer is, such as (likely using verifiable credentials) their authority to issue credentials.
+
+### DIDs from a Business Perspective: Non-Correlatable
+
+One of the problems with the common identifiers that we use today is that it is often necessary to reuse them. On almost every site we visit, we provide an email address so that the site can send us notifications. That means that many sites can share information about us just by correlating our email address. Since we create our own DIDs and choose how we want to share them, we needn’t have just one DID, but rather one DID for every service to which we connect. The expectation is that you will have many DIDs—one for each relationship you have on the Internet. Note that both sides of a relationship provide a DID for the other to use to communicate with them, as shown below.
+
+![DID Relationships Updated](./images/DID_Relationships_Updated.png)
+
+*DID Relationships*
+
+Just as today when you first register with a site, you create an account userID and password; with DIDs, you will create and share a new DID (and DIDDoc) with the site. When you return to the site, providing the DID and proving that you control the DID are sufficient for the service to know who you are. Hey, a way to eliminate user IDs and passwords!
+
+### DIDs from a Business Perspective: Secure Communications
+
+As described earlier, a DIDDoc contains public keys and service endpoints for the entity that controls that DID. This enables a powerful capability: a secure, end-to-end encrypted messaging mechanism. Given a DID and its corresponding DIDDoc, an entity can encrypt a message for the controller of the DID (using the public key in the DIDDoc) and send it to the designated service endpoint. Upon receipt, the DID’s controller can decrypt (using the corresponding private key) and process the message. We’ll cover this capability a lot more in later chapters, including the fact that with this capability, there is no need to share an email address to receive notifications from a service. The service can just use the messaging capability inherent in DID communications.
+
+### DIDs from a Business Perspective: Public Versus Private DIDs
+
+Let’s look at the types of DIDs for a minute because there are important differences between public and private (pairwise) DIDs.
+
+![Public DID](./images/Public_DID_.png)
+
+*Public DID*
+
+This [demonstration](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS172x/PublicAndPrivateDIDs.md) goes over the following information about public and private DIDs. The pictures are a bit complicated!
+
+A **public DID** is one that is intended to be widely available—visible to anyone that is presented with the DID. Since anyone can both resolve the DID and contact the owner, if the DID is used many times, it is correlatable. In this case, correlation isn’t a bad thing. A company or government, for example, will often use public DIDs. A prime example of a public DID is the DID of a verifiable credential issuer. Since the holder of the credential may present the credential to anyone, the identity (via the public DID) of the issuer must be part of what the verifier learns from the presentation. That way, the verifier can investigate (as necessary) to decide if they trust the issuer. Public DIDs are usually put on blockchains so that they can be globally resolved.
+
+On the other hand, an important use case of DIDs is that they enable two (or several) parties to connect with one another. In this case, it’s not important that everyone in the world be able to resolve the DIDs for the parties—just the parties themselves—and **private DIDs** (often called **pairwise DIDs**) are used. Instead of publishing the DIDs on the blockchain for anyone in the world to see, the entities create the DIDs and DIDDocs and then send both directly to the other party(ies) to hold. If they need to update the DID, such as to change the endpoint, the update is sent directly to the other party(ies) to update their copy of the data. No one other than the parties involved can see or resolve the DIDs.
+
+![Private DID](./images/Private_DID.png)
+
+*Private DID*
+
+Why are private DIDs important? There are two reasons:
+
+  - First, since the DIDs are only intended for use by a small, specific group (usually just two), the DIDs are not shared beyond that group.
+  - Second, writing to a blockchain is expensive and by not writing DIDs that don’t have to be public to the blockchain, the costs (resources, time, transaction fees) are reduced.
+
+Happily, private DIDs far (far) outnumber the DIDs of verifiable credential issuers and as a result, the l`oad on `a public blockchain serving DIDs is massively reduced.
+
+In the Aries section of the course, we’ll learn about the DID method called “`did:peer,`” which defines the mechanism for sharing and using private, pairwise DIDs.
+
+### DIDs and Verifiable Credentials
+
+Let’s come back to cover how DIDs are used, including how DIDs are used with verifiable credentials. It’s not always clear!
+
+First, in an Aries ecosystem of issuers, holder/provers and verifiers, DIDs are used to establish secure, point-to-point messaging channels between the agents of the participants. In this use of DIDs, there are no verifiable credentials involved, just messages encrypted and sent to participants using the information in the DIDDocs (notably, public keys and endpoints) to allow a sender to encrypt (using the recipient’s public key) a message to the recipient and send it (using the recipient’s endpoint). The recipient must have the associated private key to decrypt and process the message.
+
+Second, with a verifiable credential, DIDs are used as the identifier for the issuer. The issuer DID is used to uniquely identify the issuer and is resolved to get a public key related to the DID. That public key is then used to verify the data in the verifiable credential did indeed come from the issuer—to check the cryptographic signature using the public key of the DID.
+
+![Uses for Public and Private DIDs](./images/Uses_for_Public_and_Private_DIDs_Updated.png)
+
+*Uses for Public and Private DIDs*
+
+> **NOTE:** To reiterate, all participants have private pairwise DIDs for messaging. In addition, issuer’s have a public DID that is with the verifiable credentials they issue to holders. That DID ensures the verifier knows who issued the credential a holder presents.
 
 ### Zero-Knowledge Proof (ZKP) and Selective Disclosure
 
+**Zero-Knowledge Proof**
+
+A [zero-knowledge proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof) (ZKP) is about proving attributes about an entity (a person, organization or thing) without exposing a correlatable identifier about that entity. Formally, it’s about presenting claims from verifiable credentials without exposing the key (and hence a unique identifier) of the proving party to the verifier. A ZKP still exposes the data asked for (which could uniquely identify the prover), but does so in a way that proves the prover possesses the issued verifiable credential while preventing multiple verifiers from correlating the prover’s identity. Indy, based on underlying Ursa cryptography, implements ZKP support. This approach is called **Anonymous Credentials (AnonCreds)**.
+
+![ZKPs](./images/ZKPs.png)
+
+*ZKPs*
+
+There are other types of verifiable credentials that do not use a ZKP-based approach. In a non-ZKP proof, the holder/prover proves control over a DID to an issuer and the issuer embeds that DID in the issued credential. Later, a verifier extracts that DID from a presentation of the credential and has the holder/prover prove they (still) control that DID. This proves the credential was issued to the holder. Thus, a non-ZKP proof includes a public DID for the issuer (like the Indy ZKP model) and a public DID for the holder/prover (unlike Indy). Usually in the non-ZKP model, the entire credential (with the embedded DIDs) is cryptographically signed by the issuer (proving the claims and the DIDs).
+
+> **NOTE:** In the non-ZKP model, the DID of the holder/prover is included in the credential and hence any verifiers of the credential know a common, globally unique identifier for the holder/prover, which is a privacy concern as it is a point of correlation.
+
+![The ZKP (Indy) versus Non-ZKP Approach](./images/The_ZKP__Indy__versus_Non-ZKP_Approach.png)
+
+*The Indy Anonymous Credentials (AnonCreds) ZKP versus Non-ZKP Approach*
+
+**Selective Disclosure**
+
+The Indy AnonCreds ZKP model enables some additional capabilities beyond most non-ZKP implementations. Specifically, that claims from verifiable credentials can be selectively disclosed, meaning that just some data elements from credentials, even across credentials can (and should be) provided in a single presentation. By providing them in a single presentation, the verifier knows that all of the credentials were issued to the same entity. In addition, a piece of cryptography magic that is part of ZKP (that we won’t detail here—but it’s fascinating) allows proving pieces of information without presenting the underlying data.
+
+A useful example of both selective disclosure and a ZKP supported in Indy AnonCreds is a proof that a person is older than a given age based on the date of birth in a verifiable credential driver’s license without disclosing any other information, including name or date of birth. The image below demonstrates how that might look in an SSI-enabled app at a pub.
+
+![An Example of Selective Disclosure](./images/An_Example_of_Selective_Disclosure.png)
+
+*An Example of Selective Disclosure*
+
+The verifier (a bartender) can confirm:
+
+  - The issuer is the appropriate authority.
+  - The picture shows the same person presenting the verifiable credential.
+  - The person is old enough to drink in the pub (the check mark).
+  - The credential has not been revoked.
+
+That information is proven ***without*** the person having to reveal their personal information (address, eye color, etc.), or even their date of birth.
+
+Combined, ZKPs and selective disclosure enable a massive reduction in the data exposed during an identifying process. By not revealing a correlating identifier, and using selective disclosure to only expose the data needed for a transaction—including being able to prove possession of a credential without disclosing any information from the credential at all—is an important step in being able to keep private data private.
+
+It is important to remember that ZKPs are not a panacea for privacy. For any business transaction, the verifier must collect enough information from the prover as to mitigate their risk for the given transaction. That may mean requesting enough claim data to uniquely identify the prover. For example, the verifier may be required by government regulations to collect identifying information about the prover for auditing purposes. Selective disclosure enables verifiers to be much more precise in collecting that data than existing technology, but does not eliminate the collection entirely. As well, once claims are given to the verifier in a presentation, the verifier has that data, and can technically (if not legally) do anything they want with it. There is no technical capability in this model that allows, for example, a prover to “revoke” a presentation and take the data back from the verifier.
+
+### Beyond Indy AnonCreds: BBS+
+
+When talking about useful ZKP-based verifiable credentials for self-sovereign identity, Indy AnonCreds has been the “only game in town” since 2017. Indy AnonCreds is a complete ZKP implementation, including predicates (e.g., “older than 21”), powerful proof request capabilities, and a full credential revocation model. However, Indy AnonCreds is not perfect and its faults have been criticized. The biggest issue with Indy AnonCreds is that they are not compatible with the W3C Verifiable Credentials standard—largely because the standard didn’t exist when Indy AnonCreds was implemented. To address that, the Indy community started down a path called “Rich Schemas” to merge Indy AnonCreds with the W3C Verifiable Credentials standard. Unfortunately, the design for rich schemas was fairly complex and relied even more heavily on the Indy ledger. It was going to be a tough path.
+
+![An Example of ZKP Supported by Indy AnonCreds Updated](./images/LFS172x_CourseGraphics_ch2.png)
+
+*An Example of ZKP Supported by Indy AnonCreds*
+
+Then, in early 2020, a team from Mattr Global in New Zealand, provided a better answer—W3C Standard Verifiable Credentials using JSON-LD with BBS+ Signatures. It’s quite a mouthful, so it’s often shortened to **BBS+ VCs**. BBS+ VCs use a slightly newer form of cryptographic signatures (but still more than 15 years old!) to provide some of the key features of Indy AnonCreds in a W3C standard package. In particular, BBS+ VCs provide ZKP support by not having to disclose a unique identifier for the holder and by supporting selective disclosure. While still not quite there yet, it is expected that BBS+ will also provide a scalable revocation mechanism without the need for a unique credential identifier. Not anticipated any time soon, but not out of the realm of possibility is a way to do ZKP predicates—the ability to prove an expression (e.g., older than 21) without revealing the underlying (date of birth) data.
+
+ 
+
+| Verifiable Credential Capability | Indy AnonCreds | BBS+ VCs |
+| --- | --- | --- |
+| ZKP for holder/subject identifier | Yes | Yes | 
+| Selective disclosure | Yes | Yes |
+| Predicates (e.g., “age > 19”) | Yes | No |
+| ZKP revocation | Yes | Not Yet |
+| W3C Standard format verifiable credential | No | Yes |
+| JSON-LD format (semantic schema) | No | Yes |
+ 
+
+So why are BBS+ VCs interesting to the Hyperledger Indy/Aries community, given there are some fairly significant trade-offs with Indy AnonCreds? The reason is that BBS+ VCs and their ZKP/selective disclosure capabilities are of keen interest **outside** of the Indy/Aries community. That interest across ecosystems increases the likelihood of the dominant VC format including the (to those in the Indy/Aries community, absolutely vital) capabilities of ZKP and selective disclosure.
+
+BBS+ VCs are still (as of this writing) just being added into Aries implementations so they have yet to be really put to the test. It’s an element of Aries that will be interesting to watch over the next year or so.
+
 ### Wallets Are Agents
 
-### Trust Over IP (ToIP)
+A third key component of SSI, along with verifiable credentials and DIDs, is the software that you use to process verifiable credentials and DIDs—what we’ve called your digital wallet to this point in the course. Indy, Aries and Ursa use the term **agent** to mean the software that interacts with other entities (via DIDs and more, as we'll find out). For example, a person might have a mobile agent app on their smart device, while an organization might have an enterprise agent running on an enterprise server, perhaps in the cloud.
+
+All agents (with rare exceptions) have secure storage for securing identity-related data including DIDs, keys and verifiable credentials. As well, all agents are controlled to some degree by their owner, sometimes with direct control (and comparable high trust) and sometimes with minimal control, and far less trust. We’ll cover different uses and types of agents in a later chapter.
+
+![A Mobile Agent App](./images/A_Mobile_Agent_App.png)
+
+*A Mobile Agent App*
+
+For those familiar with a [password manager](https://en.wikipedia.org/wiki/Password_manager) such as 1Password or LastPass, you’ll find a personal agent is quite similar—there is a name for each relationship and associated data. However, unlike password managers that use things such as your copy/paste clipboard for user IDs and passwords and screen-scrape applications and websites, agents communicate directly with other agents to accomplish identity-related tasks. As agents use messaging to communicate with one another, users will also see a similarity between agents and the messaging apps we use today, such as WhatsApp and Facebook Messenger. Unlike those apps, agents use messaging for far more than just sending text, images and links, including for transactions around the exchange of credentials and presentations. Further, we expect agents to be the cornerstone of self-sovereign identity, which is different from the foundations of those apps. We dig into agents in Chapter 5 of this course.
+
+### Trust Over IP (ToIP) (1)
+
+Along with SSI, another term you will hear surrounding Indy, Aries and Ursa is **trust over IP (ToIP)**. ToIP is a layered set of technical protocols to enable trust on the Internet and the parallel set of governance frameworks that define how those protocols are used. An instance of those technical protocols at layers 1-3 of the ToIP technical stack are embodied in Indy, Aries and Ursa. ToIP includes self-sovereign identity in that it covers identity, but goes beyond that to cover any type of authentic data. Authentic data in this context is data that is not necessarily a credential (attributes about an entity) but is managed as a verifiable credential and offers the same guarantees when proven.
+
+ToIP is defined by the “Trust over IP Dual Stacks,” as represented in this image from the [Trust over IP Foundation](https://trustoverip.org/):
+
+![Trust over IP (ToIP) Technology Stack](./images/ToIP_Stack.png)
+
+*Trust over IP (ToIP) Technology Stack*
+
+You should recognize most of the components of the ToIP Technology Stack from what we’ve already talked about in this course. At the bottom right, the foundation of the technical stack are public ledgers that store decentralized identifiers (DIDs) and (in some cases) other data necessary for the higher layers. Above that are agents and the protocols that enable agents to establish connections and exchange messages (information). We’ll talk about agents in Chapter 5. The next layer up is the data exchange protocols layer, where verifiable credentials are issued and presented to enable trusted information flow—data cryptographically signed by the participants.
+
+> **NOTE:** The ”Technical Trust” is enabled by cryptography at layers 1 and 2, while “Human Trust” is enabled through data exchange protocols and application ecosystems at layers 3 and 4.
+
+### Trust Over IP (ToIP) (2)
+
+We’ll talk more about **governance frameworks** later in the course. The entire governance stack outlines the rules that the participants at each layer agree to use to enable that layer (and those below) to work in practice. Example governance frameworks include the following topics we’ll cover in this course:
+
+  - How the readers and writers of the blockchain operate.
+  - How the agents know the meaning of messages that form a protocol.
+  - What the claims in credentials signify to the verifier.
+  - By what authority an issuer is able to issue a credential.
+
+For the purposes of this course, we will talk largely about self-sovereign identity (SSI)—it’s a big topic. Do remember though as you consider the capabilities of this technology that it can be applied beyond identity and into any domain where authentic data is important. The following are a few examples.
+
+  - Many supply chain use cases can be handled using authentic data. As events occur to items being tracked (e.g., transferred from one carrier to another), verifiable credentials can be issued to capture the state of the item and event. Verifying the claims in the credential provides proof of that data later, demonstrating the provenance of the item. Food, shipping, diamonds, oil and gas and many, many more supply chains can be tracked this way.
+  - Regulatory processes that are based on paper trails can be replaced with authentic data. Rather than relying on paper for documenting and manually verifying compliance, verifiable credentials could be generated from the source and digitally verified. Since the verifiable credentials are generated at the source and signed (immutable), they provide a reliable audit trail of events and actions.
+  - The Government of British Columbia has demonstrated the use of authentic data in the handling of mine inspections in BC. Rather than a notebook being used for tracking mine inspections, the inspection data is digitally collected, recorded in a database and an inspection verifiable credential generated about the report that guarantees its authenticity. Should there be a need later to present the report (for example, in court), the inspection credentials can be proven, verifying the accuracy of the inspection report.
+
+> **NOTE:** *In all of these cases, even though the use case is not centered on identity, there is an element of identity in each one. Specifically, in all cases, the identity of the credential issuer must be known to determine if they have the authority and capability to issue the credential, and the holder/prover must be able to generate a presentation of the claims in the verifiable credential.*
 
 ### Summary
 
+We’ve introduced a lot of new capabilities in this section and along the way alluded to how these capabilities help solve the Internet identity problems outlined in Chapter 1. Verifiable credentials, DIDs and agents are at the core of self-sovereign identity and although they get you a long way towards solving the problems we talked about in Chapter 1, we need to provide a little more background about the technical elements that make a new trust layer for the Internet possible. In the next chapter, we will learn about the software components necessary to receive, store and transmit both verifiable credentials and DIDs.
+
+Let’s go back to bullet points in the Chapter 1 summary and see how the capabilities introduced in this chapter address the problems we find on the Internet today:
+
+| Internet Challenges Today | How Verifiable Credentials, SSI and ToIP Address These Challenges |
+| --- | --- |
+| User IDs/passwords are the norm, but they are a pain to use, and as a result, are susceptible to attack. They are the best we have right now, but not a solid basis for trust. Further, IDs work only one way—users don't get an ID from a service they use. | Websites can use DIDs and, as needed, verifiable credentials to get enough information about users to establish sessions. We’ll see later that using DIDs and verifiable credentials are a lot easier and safer for users than passwords. |
+| Other personal information and identifiers we have that we could otherwise use to prove our identity are not trusted because it's impossible to tell if the data was actually issued to the person providing it. The many breaches of private identifiers make them impossible to completely trust, and verifying that information adds (sometimes significant) costs. | Presentations of claims from verifiable credentials and knowing who issued the credentials mean that we can trust the claims to be correct. This is based on the four attributes we learn when verifying a presentation. |
+| Since the identity attributes we could use are not trusted (they are not things only we know), we often have to resort to in-person delivery of paper documents to prove things about ourselves, a further cost for all participants. | We can use verifiable credentials online instead of having to use paper documents in-person. |
+| Reviewers of the paper documents we present must become experts in the state of the art in forging and falsifying paper documents, a difficult role in which to be placed. | The trust of the claims is in cryptography and knowing about the issuer. People don’t have to be experts at detecting forgeries. |
+| The identifiers we use are correlated across sites, allowing inferences to be made about us, and exposing information we don't intend to be shared across sites. This is annoying at the least, and can have catastrophic results in the worst case. | By using private DIDs and verifiable credentials based on ZKPs, we can radically reduce the online correlation that is happening today. |
+| Centralized repositories of identifiers and data about the people associated with those identifiers are targeted by hackers because the data has high value. This exacerbates the problem of not being able to trust "personal" data presented online (see above). | If high value data is only accepted when presented as a claim from a verifiable credential, there is no value in having data from breaches. |
+| Centralized identifiers can be abused by those who control those identifiers. For example, they can be taken away from a subject without due process. | You create your own DIDs and those identifiers cannot be taken away by a centralized authority. You control your DIDs, no one else. |
+
 ## Chapter 3: SSI Using Indy, Aries and Ursa, Incomplete section
 
-### Introduction, Incomplete1 min1 minute
+### Introduction
+
+In Chapter 2, we introduced the concept of self-sovereign identity and how the verifiable credentials model adds a needed layer of trust to the Internet. In this chapter, we will introduce Hyperledger Indy, Aries and Ursa and how the technologies from these projects (surprise!) enable SSI. Along the way, we’ll continue to dig into the verifiable credential model and learn more about decentralized identifiers, agents, zero-knowledge proofs and selective disclosure.
 
 ### In the Beginning, There Was Indy..., Incomplete4 min4 minutes
 
