@@ -18,6 +18,8 @@ Hyperledger Indy, Aries and Ursa are blockchain-based frameworks that enable an 
 
 ![Phone with a sticky note](./images/Phone_with_a_sticky_notes.png)
 
+*Phone with a sticky note*
+
 What’s the big deal about identity? Well, when the Internet was first created, all of the computers that were connecting to one another were "trusted". The number of systems was small and the people running those systems knew each other so they didn’t need mechanisms to know who was sending what data between the systems. As the number of systems on the Internet grew (and grew and grew…), that trust quickly diminished and the first of many mechanisms was added to systems to try to identify who was contacting whom. Unfortunately, the problem has never really been solved. The most common (and universally hated) system, that of user IDs and passwords, is fraught with problems. The resulting lack of certainty of who is on the other keyboard has led to the loss of billions from hacks, data breaches, identity theft, scams and more. Further, that same lack of certainty has made many types of business transactions on the Internet impossible—the risk of being fooled is just too high.
 
 Indy, Aries and Ursa have been created to add a trust layer to the Internet using mechanisms that are easy to use, enable online trust and enhance privacy. It’s a big goal that is of vital importance to everyone on the Internet. And, it’s a goal that has recently become realizable with the advent of blockchain.
@@ -49,7 +51,7 @@ One great way to interact with peers taking this course and resolving any **cont
 
 We strongly encourage you not only to ask questions, but to share with your peers opinions about the course content, as well as valuable related resources. The Discussion Forums will be reviewed periodically by the Linux Foundation staff, but it is primarily a community resource, not an 'ask the instructor' service.
 
-  > ***Note:*** Before starting a thread about your issue, we strongly encourage you to do a quick search to see if your question has already been addressed. It’s often the case that there will be one or two threads asking the same question that has been answered.
+> **NOTE:** Before starting a thread about your issue, we strongly encourage you to do a quick search to see if your question has already been addressed. It’s often the case that there will be one or two threads asking the same question that has been answered.
 
 To learn more tips on how to use them, read the following article: "[Getting the Most Out of the edX Discussion Forums.](https://blog.edx.org/getting-most-out-edx-discussion-forums"
 
@@ -85,6 +87,8 @@ As the famous 1993 New Yorker cartoon goes—"[No one knows you are a dog on the
 
 ![Laptop and dog](./images/Internet_dog.jpg)
 
+*Laptop and dog*
+
 To ensure that the person you're talking to online is who they say they are, that what they are saying is true, and whether or not you want to trust them for some business transaction, you really have to do a thorough background investigation. Today,
 
   - Would you buy a house based solely on the electronic data sent to you by the seller?
@@ -113,7 +117,7 @@ In turn, those with whom we interact create an identifier for us and check that 
 
 ![Two people greeting each other](./images/Greetings.png)
 
-_Interaction Creates Identifiers_
+*Interaction Creates Identifiers*
 
 The same pattern is used online, but there are a variety of problems that occur, some obvious, some a little more subtle. Let's go through them.
 
@@ -129,7 +133,7 @@ The basic mechanism for knowing who you are on the Internet is the user ID and p
  
 ![Criminal](./images/Criminal.png)
 
-_Today’s User ID and Password Model Has Problems!_
+*Today’s User ID and Password Model Has Problems!*
 
 A common approach to solving the "too many passwords" problem is the use of Identity Providers (IdPs) such as Facebook and Google. Smaller sites use an IdP for authentication (user ID and password verification) and to get basic identity attributes such as name and email address. A problem with that approach is that each time an IdP is used, the IdP learns things about us—our habits, our interests, what sites we use and so on. Our privacy is lost.
 
@@ -152,6 +156,8 @@ We've talked about a few problems with the current Internet identity approaches 
 The use of common identifiers on so many different sites creates what is known as a correlation problem. Correlation in this context means associating without consent information about a single identity across multiple systems. The proliferation of this kind of correlation on the Internet, driven primarily by advertising, has resulted in a massive loss of privacy for Internet users (basically, everyone). An excellent/horrible example of this was exposed by a data breach at the relatively unknown Florida company, [Exactis](https://www.marketwatch.com/story/a-new-data-breach-may-have-exposed-personal-information-of-almost-every-american-adult-2018-06-27). The breach was massive, covering almost every American and American company (340M records total). However, the content was equally shocking: more than 400 data elements per record collected from a number of sites correlating details about each person—their name, age, race, religion, size of family, etc. You can be sure that no one ever agreed to allow Exactis to collect that information. They correlated the data across many "partner" sites to collect a picture of each person that they in turn sold to anyone willing to pay.
 
 ![Common Identifiers Across Multiple Sites Causes Correlation](./images/Common_Identifiers_Across_Multiple_Sites_Causes_Correlation.png)
+
+*Common Identifiers Across Multiple Sites Causes Correlation*
 
 Correlation is made possible because of the common identifiers we use online daily. Our email address is the single largest factor since we share it on almost every site, but there are others. Each time we use the same account name on a different site we create the possibility of correlation. When we give other identifiers about ourselves (e.g. phone number, address, government IDs, etc.), firms can correlate that data across sites. Tracking cookies placed by websites and ads enable the linking of IDs across websites. Some of the new General Data Protection Regulations (GDPR) in Europe are designed to prevent these practices for companies that do business in Europe, but not so in other places. Even then, it is a legal, not technical solution, and so remains susceptible to bad actors. In fact, even with GDPR in place, the data collection continues, as this article from the Linux Journal shows in quite shocking detail, "[If Your Privacy Is in the Hands of Others Alone, You Don’t Have Any.](https://www.linuxjournal.com/content/if-your-privacy-hands-others-alone-you-dont-have-any)"
 
@@ -181,6 +187,8 @@ A typical paper credential, say a driver’s license, is issued by a government 
 
 ![The Paper Credential Model](./images/The_Paper_Credential_Model.png)
 
+*The Paper Credential Model*
+
 The paper credential model (ideally) **proves**:
 
   - Who issued the credential.
@@ -192,6 +200,8 @@ The caveat "ideally" is included because of the possibility of forgery in the us
 At the time this course is being updated (April 2021) vaccines for COVID-19 are rolling out around the globe, and calls for a trusted “proof of vaccination” document are gaining momentum. The decades old World Health Organization Yellow Card/Carte Jaune is the current standard, but it is insufficient for a 21st century pandemic. While a COVID-19 vaccine certificate could enable travel and the ability to get back to a more “normal” life, relying on a handwritten, paper document is insufficient to provide the necessary trust. They are just too easy to forge, as we have seen from the many stories in the press about scammers selling and people buying fake COVID-19 test results and proof of vaccination certificates.
 
 ![Easily Forged Proof of Vaccination Record](./images/proof_of_vaccination_forged.png)
+
+*Easily Forged Proof of Vaccination Record*
 
 Further, the motivation to forge the documents is higher than situations we have seen in the past. For example, combine a desire/need to travel with the need for unavailable proof of vaccinations (or proof of a recent negative test) and a new, basic and high volume, paper-based verification process, and you have a situation ripe for fraud. And, the ramification of fraud in this case is significant. Worst case is you have people travelling that shouldn’t be, increasing instances of COVID-19 and extending the pandemic. Further, a lack of trust in the safety of travel will prevent many from doing so, suppressing the economic recovery of the travel industry as we come out of the pandemic.
 
@@ -223,6 +233,8 @@ So where does that leave us? These are important points and we’ll come back to
   - User IDs/passwords are the norm, but they are a pain to use, and as a result, are susceptible to attack. They are the best we have right now, but not a solid basis for trust. Further, IDs work only one way—users don’t get an ID from a service they are using.
  
 ![User ID and Passwords Are a Pain to User](./images/User_ID_and_Passwords_Are_a_Pain_to_Use_.png)
+
+*User ID and Passwords Are a Pain to User*
 
   - Other personal information and identifiers we have that we could otherwise use to prove our identity are not trusted because it's impossible to tell if the data was actually issued to the person entering it. The many breaches of private identifiers make them impossible to completely trust (even in person), and verifying that information adds (sometimes significant) costs.
   - Since the identity attributes we could use are not trusted (they are not things only we know), we often have to resort to in-person delivery of paper documents to prove things about ourselves, adding costs for all participants.
@@ -259,11 +271,15 @@ The Hyperledger projects, Indy, Aries and Ursa, which we will talk about in upco
 
 ![The Verifiable Credentials Model](./images/The_Verifiable_Credentials_Model.png)
 
+*The Verifiable Credentials Model*
+
 For identity, verifiable credentials are digital, cryptographically-protected data from authorities that you can use to prove you are you! With Indy, the data can be used by their holder to generate privacy-preserving cryptographic zero-knowledge proofs (ZKPs—we will talk about these shortly) that can be checked by a verifier.
 
-  > **NOTE:** For the more technically inclined, credentials are JSON docs, constructed and cryptographically signed by an issuer and countersigned by the holder.
+> **NOTE:** For the more technically inclined, credentials are JSON docs, constructed and cryptographically signed by an issuer and countersigned by the holder.
 
 ![A Holder Will Generate a Presentation that Will Be Checked By Verifier](./images/A_holder_will_generate_a_presentation_that_will_be_checked_by_a_verifier.png)
+
+*A Holder Will Generate a Presentation that Will Be Checked By Verifier*
 
 ### Verifiable Credentials (2)
 
@@ -271,11 +287,13 @@ Referring to the following illustration from the World Wide Web Consortium (W3C)
 
 ![The W3C Verifiable Credentials Model](./images/The_W3C_Verifiable_Credentials_Model_updated.png)
 
+*The W3C Verifiable Credentials Model*
+
 Compared to the paper credentials model that we talked about in the last chapter, verifiable credentials are far more secure. The verifier is not a person trying to identify a forged document. Instead, if the cryptographic verification succeeds, the verifier can be certain of the validity of the data—those same three attributes proven when verifying a paper credential. That means that the problem of whether the verifier trusts the holder more or less goes away. The holder cannot forge the cryptography protecting the verifiable credentials and so the data acquired can be accepted without further concern.
 
 However, there does remain a challenge with a verifiable credential—and it's actually the same thing with a paper credential:
 
-_Do you trust the issuer and the process by which the issuer decided to issue the credential?_
+*Do you trust the issuer and the process by which the issuer decided to issue the credential?*
 
 To trust the information in a credential, it is necessary that the verifier trust the issuer and that the issuer’s processes are carried out with integrity. For an official government-issued identity document (driver’s license, passport, etc.) that might be an easy decision. In many cases, the verifier will require the holder to present credentials only from issuers known to the verifier.
 
@@ -296,6 +314,8 @@ or,
 A credential is made up of a set of individual claims. For example, in the case of a driver’s license, the claims would be a person’s name, address, height, weight, hair color, driver’s license number and so on.
 
 ![Claims versus Credential](./images/Claims_versus_Credential.png)
+
+*Claims versus Credential*
 
 In all uses of a verifiable credential, what is issued is a credential. However, in some implementations, when a credential is presented the credential is proven, while in others (including in Hyperledger Indy), the claims within the credential are proven individually. As we’ll see shortly when we talk about selective disclosure, this subtle difference can be quite important!
 
@@ -330,6 +350,8 @@ So far, we’ve talked about paper credentials (a physical driver’s license or
 VCs on paper can be done in a couple of ways. If possible, the credential is embedded into a QR code to be scanned. The “if possible” comes into play because the capacity of a QR code (especially a printed one) is limited to about 400-500 bytes. Any more than that and the QR code is so dense that it can’t be read by a mobile phone camera. The density issue with QR codes is demonstrated in the image below. This restriction forces a balance between that data needed in the verifiable credential with the number of bytes in its presentation. For context, the first “sample” presentation in the W3C Verifiable Credential Specification has about 1000 characters in it **_before_** any data about the verifiable credential subject is added! There are ways to compress the number of bytes in the credential (such as using something called [Concise Binary Object Representation](https://cbor.io/), or CBOR), so it is possible, but the amount of data is still limited.
 
 ![QR codes](./images/QR_codes.png)
+
+*QR codes*
 
 QR Codes, one with the URL of this course (114 characters),
 the second with the text of the next paragraph (332 characters)
@@ -397,7 +419,7 @@ DIDs are a special kind of identifier that are created by their owner, independe
 
 ![An Example of a DID Updated](./images/LFS172x_CourseGraphics-02.png)
 
-*An Example of a DID*
+*An Example of a DID Updated*
 
 > **NOTE:** This section gets a little technical, but don’t worry, we’ll go through this and then come back to what DIDs mean from a business perspective.
 
