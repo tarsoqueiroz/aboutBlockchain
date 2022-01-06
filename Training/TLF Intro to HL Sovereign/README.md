@@ -651,19 +651,180 @@ Let’s go back to bullet points in the Chapter 1 summary and see how the capabi
 | Centralized repositories of identifiers and data about the people associated with those identifiers are targeted by hackers because the data has high value. This exacerbates the problem of not being able to trust "personal" data presented online (see above). | If high value data is only accepted when presented as a claim from a verifiable credential, there is no value in having data from breaches. |
 | Centralized identifiers can be abused by those who control those identifiers. For example, they can be taken away from a subject without due process. | You create your own DIDs and those identifiers cannot be taken away by a centralized authority. You control your DIDs, no one else. |
 
-## Chapter 3: SSI Using Indy, Aries and Ursa, Incomplete section
+## Chapter 3: SSI Using Indy, Aries and Ursa
 
 ### Introduction
 
 In Chapter 2, we introduced the concept of self-sovereign identity and how the verifiable credentials model adds a needed layer of trust to the Internet. In this chapter, we will introduce Hyperledger Indy, Aries and Ursa and how the technologies from these projects (surprise!) enable SSI. Along the way, we’ll continue to dig into the verifiable credential model and learn more about decentralized identifiers, agents, zero-knowledge proofs and selective disclosure.
 
-### In the Beginning, There Was Indy..., Incomplete4 min4 minutes
+### Learning Objectives
 
-### Indy, Aries and Ursa Working Together, Incomplete1 min1 minute
+By the end of this chapter you should:
 
-### Hyperledger Ursa, Incomplete4 min4 minutes
+  - Have an understanding of how each of the Hyperledger identity projects came about.
+  - Be familiar with the capabilities of each of the Hyperledger identity projects.
+  - Be familiar with how agents communicate and exchange credentials.
+  - Have some hands-on experience working with agents!
 
-### Hyperledger Indy, Incomplete8 min8 minutes
+### In the Beginning, There Was Indy...
+
+**... Hyperledger Indy, Aries and Ursa - History**
+
+Here we are, into the third chapter and we’ve barely mentioned anything about the stars of the course: Hyperledger Indy, Aries and Ursa. We’ve talked about the problems with trust on the Internet in Chapter 1. In Chapter 2, we presented some new approaches enabled by blockchain technology that are the building blocks of decentralized identity—approaches that make SSI possible! And, as you might be able to guess, Hyperledger Indy, Aries and Ursa are (awesome) implementations of those building blocks. However, before we dig too deeply into these projects, let’s introduce them by way of a brief history lesson on how they came about in the first place.
+
+![The Linux Foundation Frameworks and Tools](./images/The_Linux_Foundation_Frameworks_and_Tools.png)
+
+*The Linux Foundation Frameworks and Tools*
+
+![The Linux Foundation Frameworks and Tools](./images/A_Timeline_for_the_Hyperledger_Identity_Projects.png)
+
+*The Linux Foundation Frameworks and Tools*
+
+### Hyperledger Indy Overview
+
+[Hyperledger Indy](https://www.hyperledger.org/projects/hyperledger-indy) was Hyperledger’s first "identity-focused" blockchain framework, joining Hyperledger in 2017. The code for Indy was contributed by the Sovrin Foundation, an organization that we’ll cover a little later, after we’ve dug a bit deeper into Indy. Indy is a purpose-built distributed ledger for decentralized identity, supporting the concepts we talked about in Chapter 2. Indy includes verifiable credentials based on zero-knowledge proof (ZKP) technology, decentralized identifiers, a software development kit (SDK) for building agents and an implementation of a public, permissioned distributed ledger. We’ll be talking more about all of these things in this and later chapters.
+
+![Hyperledger Indy Logo](./images/Hyperledger_Indy_logo.png) 
+
+*Hyperledger Indy Logo*
+
+### Hyperledger Ursa Overview
+
+As Indy evolved within Hyperledger, there was a realization that the cryptography in Indy could be used in a number of Hyperledger projects, and even outside of Hyperledger. In 2018, the decision was made to migrate the `indy-crypto` code repository out of Indy and into its own project: [Hyperledger Ursa](https://www.hyperledger.org/projects/ursa). Like the Linux kernel, cryptographic algorithms and software are the domain of a few experts in the field and should not be coded by other than those experts. Ursa gives those experts a place to work together to build and package cryptographic primitives—combinations of low-level cryptography elements that only experts should build, test and make available to "ordinary developers". Just as important, it’s an open source space for experts to review those primitives and find and eliminate flaws in the implementations. Ursa packages the primitives in a way that can be consumed by Indy, Aries and any other software that needs a solid, vetted cryptographic base. The initial transfer of code from Indy to Ursa was pretty straightforward, involving a lot of renaming and updating references, but little change. As we’ll see, splitting up a project isn’t always as straightforward.
+
+![Hyperledger Ursa Logo](./images/Hyperledger_Ursa.png)
+
+*Hyperledger Ursa Logo*
+
+### Hyperledger Aries Overview
+
+The `indy-sdk` repository is the Indy software that enables building components (called agents) that can interact with an Indy ledger and with each other. Until mid-2018, groups working on building on top of Indy did so in silos, making agents that talked only to other instances of their agent, not to agents built by others. The *Indy Agents Working Group* was established to change that, by defining standard protocols to enable agent interoperability. By early 2019, at a "Connect-a-thon" in Utah, USA, the fruits of that effort were realized as developers from a variety of organizations gathered to demonstrate interoperability across a set of independently developed agent implementations. At that time, a further idea developed that led to the creation of [Hyperledger Aries](https://www.hyperledger.org/projects/aries). Although Indy is an excellent implementation of core SSI capabilities (ledger, verifiable credential model), it is not the only implementation. In the long term, it’s likely that there will be multiple implementations that are used by different organizations and communities. What if we had agents that could use DIDs and verifiable credentials from multiple ecosystems? [Aries](https://www.hyperledger.org/projects/aries) was [proposed](https://wiki.hyperledger.org/display/HYP/Hyperledger+Aries+Proposal) on that basis and accepted as a Hyperledger project in March 2019.
+
+Aries is a toolkit designed for initiatives and solutions focused on creating, transmitting, storing and using verifiable credentials. At its core are protocols enabling connectivity between agents using secure messaging to exchange information. Aries is all about peer-to-peer interactions between agents controlled by different entities—people, organizations and things. Using the standardized messaging channel, verifiable credentials can be exchanged based on DIDs rooted in different ledgers (based on Indy or other technology) using a range of verifiable credential implementations.
+
+Unlike when Ursa was separated from Indy, the separation of Aries from Indy evolved from the original vision and it took until February 2021 for [Aries to graduate into an “Active” Hyperledger project](https://www.hyperledger.org/blog/2021/02/26/hyperledger-aries-graduates-to-active-status-joins-indy-as-production-ready-hyperledger-projects-for-decentralized-identity). Some elements from the early “Indy agents” clearly remained with Indy (for example, Indy ledger interactions), while others moved to Aries (for example, secure storage and the use of non-Indy ledgers). But there was a lot in the middle (for example, Indy verifiable credentials) that fit in both places. And, while the original idea was to have a single core Aries implementation, instead, the core of Aries are the protocols that define the behavior of Aries agents, and there are multiple open and closed source implementations of those protocols for different use cases.
+
+![Hyperledger Aries Logo](./images/Hyperledger_Aries_.png)
+
+*Hyperledger Aries Logo*
+
+### The Hyperledger Identity "Stack"
+
+Together, Indy, Aries and Ursa make the Hyperledger Identity "Stack."
+
+![The Hyperledger Identity Stack](./images/The_Hyperledger_Identity__Stack_.png)
+
+*The Hyperledger Identity "Stack"*
+
+The ordering and logo sizes in the image are intentional. The ordering is about the exposure of the project to external users, while the logo sizes correspond to the size of the customer base for each of the projects. The vast majority of those working with the Hyperledger identity stack will build on top of Aries and have relatively little interaction with Indy, and almost none with Ursa. Only those contributing code directly into Aries, Indy and Ursa will have significant interaction with Indy and Ursa. Those building on top of Aries will interact with Aries, but only to understand how to build agents.
+
+### Indy, Aries and Ursa Working Together
+
+**Demo Time**
+
+With that bit of history out of the way and a basic understanding of the three projects and their relationship to one another, let’s go through an example of verifiable credentials being created, issued, held and then proven. We’ll go step-by-step through a demonstration of the interactions and how the different components of Indy, Aries and Ursa come into play.
+
+To see the demonstration and optionally run it yourself, click on this [link](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS172x/running-aries-browser-lab.md). Please come back here when you are done!
+
+### Hyperledger Ursa: Introduction
+
+The Hyperledger Ursa project produces cryptographic packages that can be used to build higher level applications. The packages Ursa produces are used by Indy and Aries for all of the uses of cryptography by those projects, including:
+
+  - generation of public/private key pairs
+  - data encryption and decryption
+  - data signing and verifying
+  - data hash generation and verification
+  - zero-knowledge proof (ZKP) technology, including issuing and revoking ZKP credentials and generating and verifying ZKPs
+
+These capabilities are used throughout Indy and Aries, as we will see when we get deeper into these projects. The need for and importance of Ursa is best understood by looking at how cryptography, an extremely complex technology, is able to be used in everyday applications. The following is a brief summary of how cryptographic algorithms are developed, implemented, standardized (in libraries such as Ursa) and deployed.
+
+### Basic Research
+
+Core cryptographic techniques are the work of mathematical researchers. They think of and subsequently prove (or not) the viability of the algorithms using pure math. It is those researchers that are responsible for the cryptographic capabilities we use in everyday life. But for the average software engineer, their work is inaccessible—the concepts are too complex to convert to software requirements and products.
+
+![Crypto Research Is Not For Everyone!](./images/Crypto_Research_Is_Not_For_Everyone_.png)
+
+*Crypto Research Is Not For Everyone!*
+
+Over time, such researchers have created breakthrough algorithms, and have evolved and enhanced existing algorithms to improve their usefulness and effectiveness. For example, creating a new encryption algorithm that is more effective than existing techniques but too slow to be useful, and then evolving the algorithm to be practically useful. The well-known [Diffie-Hellman algorithm](https://en.m.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange) was one such breakthrough, as was the use of [elliptic-curve cryptography](https://en.m.wikipedia.org/wiki/Elliptic-curve_cryptography).
+
+"Effective" in practical cryptography means that an algorithm is both useful and (relatively) safe from attack. An encryption algorithm is effective if the data cannot reasonably be decrypted except with authorized access by the intended recipient. For example, if the encryption algorithm uses a key, the key cannot easily be discovered, or the data cannot "easily" be decrypted without the key. Often that means a brute force attack (e.g., trying every possible key) cannot be completed in a reasonable time (e.g., at least 10s to 100s of years) using technology anticipated to be available for a reasonable period in the future. There are many such attack vectors and both cryptographers and their adversaries (aka hackers) are constantly thinking about what new attack vectors are possible.
+
+### Implementation
+
+The next step towards practical use of the research results is the implementation of the algorithm in code—converting the mathematical equations into software. Again, that is an exclusive domain of expert researchers/developers that know the math, the code and where weakness might show up in the algorithm or (more likely) the implementation. Implementations are packaged into well-known and well-tested open-source libraries (for example, [libsodium](https://download.libsodium.org/doc/)). It is common for the algorithm to be named and evolutions of the algorithm to be given versioned names (for example, elliptic curve algorithms, with variations for different purposes (for example, signatures, hashes, etc.), different parameters (for example, key length), with versioned standards defined by (often) the year of implementation). An example is:
+
+> `Ed25519VerificationKey2018`
+
+which is interpreted as “standard signature suite created in 2018 for the Ed25519 signature scheme using Curve25519.” It is a cryptographic suite currently used in Hyperledger Indy.
+
+You really have to be paying attention to follow and understand all the options! What non-crypto developer has time for that? Further, having an algorithm implemented in an open source library, and using it properly, without introducing vulnerabilities in the security of an application, is yet another challenge. That’s where Ursa comes in.
+
+The "open source" reference in the previous paragraph is extremely important. With trust comes verification, and the open sourcing of cryptography implementations is crucial to establish trust in the implementation. Very few put trust in such important code that they can’t evaluate, line by line and build from scratch.
+
+### Packaging
+
+Ursa takes the "raw" cryptographic algorithms and packages them up so that they can be embedded in, for example, Indy and Aries and used safely. Ursa curates what implementations to support and how to manage support for different versions as the implementations evolve (e.g., 2018 versus 2019). Where higher level standards have been defined, such as the so-called JW* mechanisms (JWE, JSON Web Encryption, JWT, JSON Web Token, JWS, JSON Web Signatures, etc.), Ursa takes care of the details in producing and consuming those data structures.
+
+### Usage
+
+With the Ursa packages embedded in Indy and Aries, cryptographic features are relatively easy to implement. When a write transaction is sent to an Indy ledger, it is signed (via a call to an Ursa function) by the transaction author and the signature is verified (via a call to an Ursa function) by the nodes of an Indy ledger that receive the transaction. When a message is sent from one Aries agent to another, it is encrypted and packaged up via a call to an Ursa function.
+
+If you are contributing to Indy and Aries, you do have to be aware of the Ursa libraries being used and the capabilities they provide. However, if you are building applications on top of Aries and using the Indy ledger and verifiable credentials, it’s all hidden from you. Calls your application makes to Indy and Aries functionality in turn make calls to Ursa to handle the cryptography needs. In fact, the main impact the cryptography will have on developers is not how to use the cryptography (phewww!!), but rather trying to debug code when so much of the data is encrypted. That can be a major pain—but MUCH easier than having to write safe and secure cryptography code!
+
+That’s all we’ll cover on Ursa itself in this course. If you are trained in cryptography and interested in working at the cryptography level on Ursa, you’ll know a lot more about this topic than we’ve covered here. Hop right over to the Hyperledger Ursa Rocket.Chat channel and start talking with the project maintainers!
+
+For everyone else, we’ll give a quick overview of Hyperledger Indy and Aries in this chapter and cover each of them in depth in the following chapters.
+
+### Hyperledger Indy: Introduction
+
+Hyperledger Indy is the core component of Hyperledger’s identity system. Indy provides code that implements the public **distributed ledger technology (DLT)** and the code to build applications that interface with the ledger. The project consists primarily of two types of repositories (repos) that contain the two parts:
+
+  - `indy-sdk`, `indy-vdr` and `indy-shared-rs`: software that enables Indy clients (such as Aries agents) to be built that interact with the Indy blockchain
+  - `indy-node`: the blockchain/DLT component of Indy
+
+Let’s look at the two artifacts.
+
+### Indy Client: indy-sdk, indy-vdr and indy-shared-rs
+
+The Indy client repositories contain the code that allows a piece of software, such as an Aries agent (introduced in the previous chapter and that we’ll cover in detail in Chapter 5), to interact with an Indy public ledger and to keep track of the keys and other identity-related data. The `indy-sdk` is the first generation of these capabilities, while `indy-vdr` and `indy-shared-rs` are a subsequent generation.
+
+The `indy-sdk` consists of a series of modules written mostly in the programming language Rust that are compiled into a "C-callable" library (called "`libindy`"). C-callable means that the library components have a standard interface such that they can be called from a majority of languages (Java, C#, Python, JavaScript, etc.), eliminating the need for an implementation in each language. The `indy-sdk` repository also includes a number of language specific "wrappers" for the library. The wrappers, currently available in Python, Java, C# (.NET) and node.js, allow the creation of Indy agents in each of those languages.
+
+![GitHub indy-sdk Screenshot](./images/GitHub_Indy_SDK.png)
+
+*GitHub indy-sdk Screenshot*
+
+The two repos `indy-vdr` and `indy-shared-rs` are new implementations of a subset of the `indy-sdk` capabilities that better support the Hyperledger Aries goal of being able to work with Indy and non-Indy ledgers, and Indy and non-Indy verifiable credential formats. The two repos, plus a new Aries-level component (called `aries-askar`) are all written in Rust and have the same C-callable interface as the `indy-sdk`. At the time this course is being edited (April 2021), the newest version of the Aries framework Aries Cloud Agent Python is being updated to remove the `indy-sdk` in favor of the new generation of components.
+
+Let’s go through the major subsystems of the `indy-sdk`, covering some important details about each. As we do, we’ll talk about how these capabilities are implemented in the new generation of Indy client software—including how some of these capabilities have been removed from Indy entirely.
+
+### Indy Ledger Client
+
+Core to the `indy-sdk` is the code that enables an Indy agent to interact with an instance of an Indy network. The newer `indy-vdr` component does just that, leaving secure storage, verifiable credential handling and so on to go into other components.
+
+The functionality is implemented as a series of messages that enable the client application to read from and write to an Indy network. The high level process for interacting with the ledger is the same for each call:
+
+  - The application prepares the data for the message to be sent, e.g., the type of message and all of the parameters necessary for that type of message.
+  - If the message is a write, the application calls cryptographic functions to sign elements of the message with a private key held by the application for that purpose. This is necessary to prove that the application has permission to write the transaction to the network.
+    - Multiple signatures from different parties may be needed depending on the roles of the parties and the impact of the message on the network. For example, if the application is not authorized to write to the ledger, the transaction must be sent to an application that is authorized to write to the ledger (called an "endorser") to sign the transaction. Once signed, either the author or the endorser can submit the transaction to the ledger (the next step).
+  - The message is sent to a verifier node that is part of the Indy ledger.
+  - The application waits until a response is received from the ledger with the result code (success or failure) and any related data.
+    - If a write transaction succeeds, one of the returned values is the transaction’s sequence number on the ledger. That information should be stored immediately by the agent so it can be used when referencing that object in later operations.
+
+The ledger objects relevant to participants in verifiable credential exchanges (issuers, holders/provers and verifiers) are covered in the next chapter when we talk about what goes on the blockchain. There are also a number of transactions that control the operation of the ledger itself, such as adding and removing verifier nodes from the network and controlling permissions about who can write what ledger transactions. We’ll not cover those further in this course, but are relevant to those who want to participate in the operation of an Indy network.
+
+The read transactions support retrieving all of the types of transactions that are stored on the ledger. Reads don’t require permissions so anyone can read data from an Indy ledger. For each read, the agent must know either the transaction sequence number of interest or the identifier. For example, the identifier for a DID is the DID string itself (e.g., `did:sov:1213423e239f9g095hg2`).
+
+A surprise for many that are new to Indy is its ledger does not support any form of querying by value or discovery. For example, you can’t just make a single query on an Indy ledger to get a list of all of the DIDs on the ledger. In the common cases, the agent must know about the transactions of interest on the ledger either because that agent wrote the data in the first place, or because the agent is configured (“hardwired”) to know about the transaction. Although you can’t query the ledger, it is a public ledger, so you can read its entire contents and if you want a query capability, you can put it in a database. How? Since the transactions are sequenced, you can just start from one and iteratively query the ledger for all the transactions (one, two, three, four…). Once you have read them all (e.g., the ledger returns “no such transaction”), every few minutes ask for any new transactions that have arrived. It’s onerous and so several people have published websites of “ledger browsers” ([Sovrin Main Net](https://sovrin-mainnet-browser.vonx.io/) and [IndyScan](https://indyscan.io/home/sovmain)) that continually query the Sovrin MainNet and provide a web interface for searching. Here is a short [demonstration of browsing an Indy ledger](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS172x/BrowsingAnIndyLedger.md).
+
+> **NOTE:** Adding a querying/discovery capability that works in a similar way to the ledger browsers but that is implemented by Indy is likely not a difficult task. It’s just not risen high enough on the priority list to be implemented as a core feature.
+
+As noted, the only feature of the `indy-vdr` component is to provide an interface to read and write to an Indy ledger. Having it in an isolated package makes it easier for an Aries agent to use it to integrate with an Indy ledger alongside resolvers for other ledgers. `indy-vdr` includes in its repo a web server wrapper that allows deployment of indy-vdr as a service for a set of Indy clients. For example, an enterprise might have Aries agents for a number of sub-organizations in the enterprise all sharing the same robust, scalable `indy-vdr` service to handle all of the reads and writes to Indy networks.
+
+### Secure Storage
+
+
 
 ### Hyperledger Aries, Incomplete3 min3 minutes
 
