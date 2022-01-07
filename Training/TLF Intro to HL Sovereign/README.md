@@ -666,9 +666,7 @@ By the end of this chapter you should:
   - Be familiar with how agents communicate and exchange credentials.
   - Have some hands-on experience working with agents!
 
-### In the Beginning, There Was Indy...
-
-**... Hyperledger Indy, Aries and Ursa - History**
+### In the Beginning, There Was Indy: Hyperledger Indy, Aries and Ursa
 
 Here we are, into the third chapter and we’ve barely mentioned anything about the stars of the course: Hyperledger Indy, Aries and Ursa. We’ve talked about the problems with trust on the Internet in Chapter 1. In Chapter 2, we presented some new approaches enabled by blockchain technology that are the building blocks of decentralized identity—approaches that make SSI possible! And, as you might be able to guess, Hyperledger Indy, Aries and Ursa are (awesome) implementations of those building blocks. However, before we dig too deeply into these projects, let’s introduce them by way of a brief history lesson on how they came about in the first place.
 
@@ -824,21 +822,113 @@ As noted, the only feature of the `indy-vdr` component is to provide an interfac
 
 ### Secure Storage
 
+The `indy-sdk` implements a secure storage component that is used to store the Indy data collected by an identity on an Indy network—DIDs, private keys, verifiable credentials and more. Unfortunately, in the early days of Indy, the term “wallet” was selected for the storage component of the `indy-sdk`, resulting in an application called a digital wallet containing a wallet. Confusing, right?
+
+In the “next generation” of Indy components, there is no secure storage at the Indy level. Instead, an Aries component called `aries-askar` implements secure storage for Aries agents, handling both Indy and non-Indy data.
+
+> **NOTE:** Askar (from Arabic, meaning guard or soldier) is one of the names of the star Hamel, the head of the Aries ram.
+
+Both `aries-askar` and the Indy wallet sub-component of the `indy-sdk` provide a pluggable API for data storage, meaning a capable developer can create another storage implementation should they need one. By default, both use the open source SQLite database and the Government of British Columbia implemented and contributed to both an implementation using the PostgreSQL database for enterprise deployments.
+
+Both use a simple storage data model with just a handful of tables implementing essentially a key-value pair system. Almost all of the data is encrypted, a detail we’ll cover later in the course. The storage is logically divided into two parts:
+
+  - “Secrets”—data associated with ledger entries and verifiable credentials, and
+  - “Non-secrets”—any other data stored by an agent.
+
+In all cases, for security reasons, operations that use private keys happen within the storage API code; the private keys are never handed out to “user code” (less scrutinized application code that might have security vulnerabilities).
+
+### Verifiable Credential Handling
+
+Indy verifiable credentials (“AnonCreds”) handling is currently built into the `indy-sdk`, and is the major subsystem of the new `indy-shared-rs` software. In both, the code is used to create credentials to be issued, generate presentations to be provided to verifiers, and to verify those presentations upon receipt. As necessary, that code calls the ledger interface (with the `indy-sdk` or the new `indy-vdr`) to retrieve the necessary ledger data to carry out those operations. We’ve already gone into detail about those operations (and we’ll talk about them again), so no need to dig too much into them now.
+
+The move to separate out the Indy verifiable credentials from the monolith `indy-sdk` into an Indy-specific verifiable credential library was done to make it easier to allow an Aries agent to use Indy and other verifiable credentials formats. This matches the reasoning for breaking out the Indy ledger interactions into the `indy-vdr` component. `indy-shared-rs` also includes a number of common cryptographic operations needed by `indy-vdr` and `aries-askar`.
+
+### Wrappers
+
+As noted earlier, both the first and second generation Indy components are written in Rust and expose a C-callable interface to allow their use in other programming languages. Each of the repos also include wrappers of language specific bindings that make it easy for an application in another language to call the Rust functions. The wrapper functions tend to be one-to-one with the Rust calls. Although most of the wrappers were hand-coded, the idea is that there is so little extra value in the wrappers that the code can be machine generated. Auto-generation would eliminate the manual effort to update the wrappers as the Rust code evolves.
+
+### Tests
+
+A key part of the first and second generation Indy components are the test suites that are automatically executed with each update to the repo. While it's comforting to know the test suite is executed (and updated) with each change, another useful aspect of the suite for those new to Indy is that the tests are working code that can be used to understand how the calls into Indy work. Not sure what exactly are the parameters to a specific Indy call? Check out the test suite and you'll find a working instance to study.
+
+### Command Line Interface (CLI)
+
+A useful feature of the `indy-sdk` that has not been replicated in the new generation of Indy components is the Indy command line interface (CLI). The CLI allows a user to execute a number of Indy-related commands such as creating a secure storage database, creating a DID, connecting to an Indy network and writing that DID to the network. In fact, with the CLI, any Indy transaction can be created, signed (if needed) and then sent to a connected Indy network. While not strictly necessary, since Aries frameworks provide ways of doing the same things, the CLI is extremely convenient for Aries and Indy developers experimenting with Indy.
+
+### indy-node
+
+The second major component of Hyperledger Indy is `indy-node`, the blockchain/distributed ledger (DL) component of Indy. Written in Python, this codebase embodies all the functionality to run nodes that implement a distributed ledger. To be a little more precise, the repository `indy-plenum` contains most of the DL code for Indy, including the consensus implementation, while the code in `indy-node` handles the transactions to read and write to the ledger. We’re going to talk a lot about the ledger and what data goes on the ledger in the next chapter, so we’ll not spend any more time on it here.
+
+![GitHub indy-node Screenshot](./images/indy-node_screenshot.png)
+
+*GitHub indy-node Screenshot*
+
+### Hyperledger Aries: Introduction
+
+Indy (and its underlying Ursa cryptography) enables issuers, holders and verifiers to generate verifiable credentials and presentations by interacting with the ledger and executing cryptographic operations. To exchange those credentials and presentations, all of those issuers, holders and verifiers will use agents (software) that send data to one another using messages. Those agents will be built by many different organizations—open source tools, commercial agents available for purchase and custom-built proprietary agents. How do all those different agent makers build agents that will work with all the other agents in the world? Further, what if you decide you want to switch from the agent you have now to a new one that is even better? You must be free to take your credentials and related data, move them to another agent and continue to use them.
+
+Those are the challenges that started the Hyperledger Aries project. Aries is about collaborating to define and share the message exchange protocols, an agent architecture and tests that enable organizations to independently build agents that work together. Since there are other verifiable credential ecosystems being developed in parallel to Hyperledger Indy, Aries is also intended to be “verifiable credential-agnostic”—the architecture of Aries should be able to support different verifiable credential implementations within a single agent. And, since Hyperledger and the Linux Foundation is about building open source software, Aries includes implementations of the protocols, architecture and tests.
+
+### It’s All About Message Protocols...
+
+Messaging in Aries is defined at several conceptual layers. At the lowest is simply the ability for one agent to send a chunk of data and for another agent to receive that data and understand it. At the next layer is the ability for agents to exchange data in a sequence of messages to accomplish some shared task. That’s a protocol. Messaging protocols are just like human protocols. For example, going out to a restaurant for a meal is a protocol, with both the guests and the restaurant staff knowing the sequence of steps for their roles—greeting, being seated, looking at menus, ordering food, etc. In Aries, an example is the “issue credential” protocol where an issuer agent coordinates with a holder agent to offer, be asked for and deliver a credential. Unlike human protocols (etiquette), Aries messaging protocols need to be carefully specified and then implemented (and tested!) by multiple participants.
+
+![It’s All About Message Protocols](./images/It_s_All_About_Message_Protocols.png)
+
+It’s All About Message Protocols
+
+Aries provides messaging at both layers. In Chapter 5, we’ll dig into Aries messaging, covering the DIDComm (DID Communications) protocol that covers the envelopes used to address and send messages from agent to agent, and content protocols—messages with specific data used between agents to accomplish a task. As indicated by the name, DIDComm uses the data associated with DIDs (public keys and service endpoints) to secure and address messages, respectively. DIDComm is an extremely powerful capability!
+
+### ...And Interoperability
+
+As we’ve discussed in Chapter 2, Indy is not the only game in town when it comes to DID and verifiable credential implementations. With a goal of global use of verifiable credentials (and all the goodness that it brings), it’s crucial that interoperability across different Aries, DID and verifiable credential implementations be a goal. Not all DID and verifiable credential implementations will last but we’re certain that there will be more than one and we will need interoperability across the major implementations. The Aries architecture defines how different implementations can be plugged into an agent to support Indy and other DID and verifiable credential implementations at the same time. The goal is to bring developers from these communities together to extend Aries to enable verifiable credential interoperability.
+
+### ...And Portability
+
+In the previous section, we talked about implementations of DIDs and verifiable credentials. But there will also be many implementations of Aries agents, built by many different organizations. As a person, organization or thing begins to use a digital wallet, they will immediately begin to collect data that is valuable—things they don’t want to lose. And, since digital wallets are just specialized pieces of software, they will at some point discover a digital wallet that is even better than the one they started with. Or perhaps the one they started with will become obsolete—no longer supported. One part of the Aries definition (albeit one that has not yet had a lot of focus) is about data storage, and more importantly the export of data from one implementation and the import of that data into another without loss.
+
+### Summary
+
+This is the linchpin chapter of the course and should be considered carefully. From this chapter we hope you understand how the problems with identity on the Internet (Chapter 1) and the solutions defined based on self-sovereign identity and the verifiable credentials model (Chapter 2) are manifest in Hyperledger Indy, Aries and Ursa. In subsequent chapters, we’ll delve deeper into the projects by looking at what goes on the blockchain (Chapter 4) and how there is more than meets the eye with agents (Chapter 5).
+
+As we did in Chapter 2, let’s go back to bullet points in the Chapter 1 summary and see how Indy, Aries and Ursa address the problems we find on the Internet today:
+
+| Internet Challenges Today | How Indy, Ursa and Aries Address These Challengess |
+| --- | --- |
+| User IDs/passwords are the norm, but they are a pain to use, and as a result, are susceptible to attack. They are the best we have right now, but not a solid basis for trust. Further, IDs work only one way—users don't get an ID from a service they use. | Aries agents used by individuals and online services exchange at least DIDs, and often verifiable credentials, to reliably identify one another as peers each time they connect. Ursa cryptography underlies the exchange, and Indy credentials are exchanged as needed. |
+| Other personal information and identifiers we have that we could otherwise use to prove our identity are not trusted because it's impossible to tell if the data was actually issued to the person providing it. The many breaches of private identifiers make them impossible to completely trust, and verifying that information adds (sometimes significant) costs. | When collecting information from users, services can use their Aries agent to connect with, request and receive back proofs of claims from a users Aries agent. |
+| Since the identity attributes we could use are not trusted (they are not things only we know), we often have to resort to in-person delivery of paper documents to prove things about ourselves, a further cost for all participants. | The cryptographic guarantees from Ursa and Indy inherent in the proving of claims allows for the delivery (via Aries agents) of digital data in place of paper. |
+| Reviewers of the paper documents we present must become experts in the state of the art in forging and falsifying paper documents, a difficult role in which to be placed. | The cryptographic guarantees from Ursa and Indy inherent in the verification of claims replaces human verification. Humans may be needed to assess the trustworthiness of the issuer, but not of the data. |
+| The identifiers we use are correlated across sites, allowing inferences to be made about us, and exposing information we don't intend to be shared across sites. This is annoying at the least, and can have catastrophic results in the worst case. | Aries agents use private, secure messaging to enable interactions without monitoring or correlation exposure. Indy credentials use ZKPs to reduce correlation when proving credentials. Ursa provides the necessary cryptographic primitives to support Aries messaging and Indy credentials. |
+| Centralized repositories of identifiers and data about the people associated with those identifiers are targeted by hackers because the data has high value. This exacerbates the problem of not being able to trust "personal" data presented online (see above). | Aries agents make it easy to decentralize the data, giving it to the subject of the data (us!) to use how and when we want. At the same time, this frees organizations currently managing those repositories from the liability of holding such toxic data. Indy provides the credentials that ensure that the data provided by the subject can be trusted. Ursa provides the cryptography to support the Indy credential model. |
+| Centralized identifiers can be abused by those who control those identifiers. For example, they can be taken away from a subject without due process. | Aries enables you to create (and delete) DIDs that you share with others how and when you want. Indy allows you to put those DIDs on a global ledger for others to access, if that is necessary. Ursa provides the cryptography that allows you to prove control over those identifiers. |
+
+## Chapter 4: A Blockchain for Identity
+
+### Introduction
+
+Hyperledger Indy implements (based on cryptography from Ursa) a purpose-built blockchain specifically for identity on the Internet—enabling certainty about who is talking to whom in a digital transaction. Since Indy is designed for such a special purpose, how does that affect the underlying blockchain implementation? Does it have the same components of other blockchains? What goes into the transactions on the blockchain?
+
+In addition to talking about the Indy blockchain, we’ll talk about some of the live implementations of Indy that you can use today, including one operated by the Sovrin Foundation, introduced briefly in the last chapter. We’ll talk about how these implementations make it easier to get started using verifiable credentials because you don’t have to operate your own instance of Indy.
+
+![Chain](./images/Chain.png)
+
+*Chain*
+
+### Learning Objectives
+
+By the end of this chapter you should:
+
+  - Be familiar with different types of blockchain and the terminology surrounding them.
+  - Understand how consensus is reached on the Indy blockchain.
+  - Know what the Sovrin Foundation is and how it relates to Indy.
+  - Be familiar with the term trust or governance framework.
+  - Understand what gets written to the ledger and more importantly, what does not!
+  - Learn about the “network of networks” issue, as more and more ledgers come online.
+
+### Indy's Blockchain: What Is Indy's Blockchain?
 
 
-### Hyperledger Aries, Incomplete3 min3 minutes
-
-### Knowledge Check, Incomplete4 activities
-
-### Knowledge Check due 10 de jan. de 2022 18:59 BRT
-
-### Summary, Incomplete3 min3 minutes
-
-## Chapter 4: A Blockchain for Identity, Incomplete section
-
-### Introduction, Incomplete1 min1 minute
-
-### Indy's Blockchain, Incomplete6 min6 minutes
 
 ### Hyperledger Indy and Sovrin, Incomplete7 min7 minutes
 
