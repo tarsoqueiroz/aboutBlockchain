@@ -905,7 +905,7 @@ As we did in Chapter 2, let’s go back to bullet points in the Chapter 1 summar
 
 ## Chapter 4: A Blockchain for Identity
 
-### Introduction
+### Introduction: Chapter Overview
 
 Hyperledger Indy implements (based on cryptography from Ursa) a purpose-built blockchain specifically for identity on the Internet—enabling certainty about who is talking to whom in a digital transaction. Since Indy is designed for such a special purpose, how does that affect the underlying blockchain implementation? Does it have the same components of other blockchains? What goes into the transactions on the blockchain?
 
@@ -928,23 +928,239 @@ By the end of this chapter you should:
 
 ### Indy's Blockchain: What Is Indy's Blockchain?
 
+In most courses on blockchain-based solutions, the core focus is about how the blockchain works and how applications interact with the blockchain component. Not so much with Indy, Aries and Ursa. The Indy blockchain plays a crucial role in enabling trust on the Internet, but when you are building applications using the technology, the focus is much more on verifiable credentials, the agents, relationships between agents and on the entities that control them. The blockchain is hidden behind the scenes, operating on a relatively small number of nodes. Regardless of its visibility, it’s important in this course that we go over the implementation of Indy’s blockchain. In the following, we’ll cover how Indy operates versus other blockchains, how consensus is reached and so on.
 
+> **NOTE:** As mentioned at the beginning of this course, we use the terms blockchain, ledger, decentralized ledger technology (DLT) and decentralized ledger (DL) interchangeably. While there are precise meanings of those terms in other contexts, in the context of the material covered here, the differences are not meaningful.
 
-### Hyperledger Indy and Sovrin, Incomplete7 min7 minutes
+Like all blockchain implementations, an Indy ledger is immutable—data is written once and never changed. Since Indy is focused only on identity, it does **not** support the concept of assets being exchanged (with a caveat, mentioned below), nor any sort of smart contract capability. It does have multiple, (largely) independently operated nodes that write transactions to the ledger. The nodes communicate to agree (reach consensus) on what transactions should be written and in what order. As well, client applications (agents) that need transactions written to the ledger must prove they are authorized to not only write to the ledger but are authorized to write that specific transaction to the ledger. For example, an update to a DIDDoc (e.g., to change the public key in the DIDDoc) can only be written by the entity that can prove it is authorized to do so based on the information in the DIDDoc itself.
 
-### So, What Goes on the Blockchain?, Incomplete6 min6 minutes
+*A caveat to the point about Indy not being about the exchange of assets:*
 
-### Indy’s “Network of Networks” Challenge, Incomplete4 min4 minutes
+*Although assets are obviously not the purpose of an Indy ledger instance, there is a capability in Indy to support a pluggable implementation of a payment token. The token isn’t used to enable general-purpose smart contract capabilities, or for storing or exchanging value such as on Bitcoin-like networks. Rather, it is to support payments for certain network operations—for example, writing to the ledger, issuing a credential or proving information about an entity. The token could be used to prevent denial-of-service (DoS) attacks (an attacker flooding the network with free ledger write operations, thus preventing legitimate operations) and might serve as a mechanism for funding an instance of the network. The term "pluggable" means that as transactions are processed on the ledger nodes, calls are made to an application programming interface (API) based on when events occur that might involve payments. Anyone operating an Indy network can write a plugin (component) that implements what happens when those API calls are made. Indy’s reference implementation is called “libnullpay,” meaning that when the API is called it just returns with no action taken.*
 
-### Knowledge Check, Incomplete5 activities
+### Types of Blockchain—What Type Is Indy?
 
-### Knowledge Check due 16 de jan. de 2022 05:39 BRT
+There are several different types of blockchain systems characterized along two dimensions: access and validation. You have likely heard of Bitcoin and Ethereum—they are public permissionless networks. That means that anyone can access them (public) and anyone can participate in the validation process (permissionless). Bitcoin mining is the validation process on that network and anyone can run a mining rig—no permission needed.
 
-### Summary, Incomplete1 min1 minute
+Similarly, the Hyperledger frameworks (Fabric, Sawtooth, Iroha and Burrow) are (primarily) used for private and permissioned networks, limiting who can access them (private) and who can participate in the validation process (permissioned). As shown in the diagram below, Indy falls between these two models.
+
+![Types of Blockchain Updated](./images/LFS172x_CourseGraphics_pt3.png)
+
+*Types of Blockchain*
+
+Indy is designed to be operated such that everyone can see the contents of the blockchain (public), but only pre-approved participants, known as stewards, are permitted to participate in the validation process (permissioned). Since only designated stewards can write blocks to the blockchain, there is no need for the high (and environmentally unfriendly) energy use associated with public blockchains such as Bitcoin and Ethereum. Rather than racing each other for the reward for writing the next block, Indy steward nodes reach consensus collaboratively, while monitoring each other for faulty or malicious behavior.
+
+> **NOTE:** *Although Indy is designed to be run as a public network, an instance of Indy (or any other public blockchain) could be run as a private network accessible only to those using the network.*
+
+The ramification of Indy being designed to be public puts a significant constraint on what data can be put on an Indy blockchain. Specifically, ***only public data can go on the blockchain—no other data, even if it is encrypted***. That last part about encrypted data might not be obvious. If the data is encrypted, it can only be accessed by those with the decryption key, so shouldn't we be able to put any data safely on a public blockchain? Well, that might be true—today. However, Indy is being built to last from decades to generations. What happens if an encryption algorithm used today is broken sometime in the future? Since the data on the blockchain is open to everyone to see and is immutable, encrypted data that can be easily decrypted becomes public information. The Indy designers don't want that, hence the rule—no private data on the blockchain. Later in this chapter, we'll cover "What Goes On The Ledger?"—a favorite question from everyone getting up to speed on Indy, Aries and Ursa.
+
+Did you catch that part about ***NO PRIVATE DATA ON THE BLOCKCHAIN?*** Good!
+
+![There is No Private Data on the Indy Blockchain!](./images/There_is_No_Private_Data_on_the_Indy_Blockchain_.png)
+
+*There Is No Private Data on the Indy Blockchain!*
+
+### How Is Consensus Reached?
+
+As with all blockchain implementations, Hyperledger Indy uses a consensus algorithm to decide the contents of the next block added to the chain. Specifically, Indy uses **Plenum**, an implementation of a Byzantine Fault Tolerance (BFT) algorithm. BFT algorithms are designed to achieve consensus when many of the nodes are not operable or accessible. The number of faulty nodes (f) in a properly operating BFT network is f = (N -1)/3, where "N" is the total number of nodes in the network. Thus, for a 25 node network "f" is 8 ((25 -1)/3). This means that if more than 8 nodes fail (either malicious actors or nodes isolated from the rest), the network can no longer achieve consensus. Plenum performance degrades less than other BFT algorithms (on the order of 3% versus up to 78% for others) when faults occur in the network. As well, underlying Indy's consensus algorithm is a secure and robust messaging system amongst the nodes of the network, including a multi-signature scheme for returning ledger state information. This improves the overall security of Indy—agents reading data from the ledger can verify the signatures of the nodes to verify the accuracy of the data. The Plenum implementation has been found to be useful enough to be separated out from the core Indy code base into a [separate repo that is used by Hyperledger Indy](https://github.com/hyperledger/indy-plenum—and) can be used by other blockchain implementations.
+
+Indy also implements a novel deployment of stewards—the nodes of the network that have permission to participate in the validation process. Since Indy is designed to be a global public network, an instance will have many available nodes located around the world—more nodes available than can be effectively used in the validation process. The validation process needs enough stewards to be robust in the face of faults, but not too many as to degrade the performance in reaching consensus. Interestingly, those testing the performance of Indy have found that the sweet spot is 25 nodes—robust, able to survive the failure of eight nodes, but fast enough to support the expected number of write transactions on the network—on the order of 10s of transactions per second.
+
+What if you have more stewards available? Indy's planned solution is to have an optimal subset of stewards as validators nodes actively participating in the Plenum consensus algorithm, and the rest as observer nodes, tracking the growing blockchain, serving reads (thus offloading that work from the validators) and ready to be called on to be validators should they be required. The image below from Sovrin (covered in the next section) shows the division of validator nodes (those currently participating in writing to the ledger) and the observer nodes (read-only nodes, but ready to become validators if needed).
+
+![The Division of Validator Versus Observer Nodes](./images/The_Division_of_Validator_Versus_Observer_Nodes.png)
+
+*The Division of Validator versus Observer Nodes*
+
+### Hyperledger Indy and Sovrin: The Sovrin Foundation
+
+At this point in the course, you’ve heard the name Sovrin a few times. The Sovrin Foundation ([sovrin.org](https://sovrin.org/)) is a global non-profit that organized the first public deployment of Hyperledger Indy as the core of its “Identity for All” mission. To understand the goal of the Sovrin Foundation, think of the Sovrin instance of Indy as the identity equivalent of the Domain Name System (DNS), which has enabled the global routing of data on the Internet since 1985. The production Sovrin network (called MainNet) has been running since July 31, 2017, its launch immortalized in this blog post, "[Launching the Sovrin Network](https://www.windley.com/archives/2017/07/launching_the_sovrin_network.shtml)" from then Sovrin Chairman Phil Windley. MainNet is a utility upon which digital identity solutions can be built.
+
+The Sovrin Foundation provides the three foundational components of the Sovrin Network in the form of a BLT (not the sandwich):
+
+- Business - The Sovrin governance framework.
+- Legal - A series of legal agreements signed by the Sovrin Network participants.
+- Technical - The underlying software of the Sovrin Network, Hyperledger Indy.
+ 
+![The Foundational Components of the Sovrin Network](./images/The_Foundational_Components_of_the_Sovrin_Network.png)
+
+*The Foundational Components of the Sovrin Network*
+
+All three parts are necessary to enable a global, trusted system for identity. The need for legal agreements and a sound technical foundation are fairly obvious, but what is a governance framework? You may recall we mentioned governance frameworks when we talked about trust over IP (ToIP) in Chapter 2.
+
+### Governance Frameworks
+
+**Governance** (also called **trust**) **frameworks** are common in the digital identity world, but are also used in other contexts, sometimes using other names, such as "operating regulations" and "operating policies." In all cases, they define how to govern multi-party systems where participants desire the ability to engage in a common type of transaction with any of the other participants, and to do so in a consistent and predictable manner. That’s a bit of a mouthful, so here’s an example. Credit card networks are operated based on a trust framework. The participants (credit card holders, merchants, clearing houses, banks and credit card companies) all operate independently, but according to the rules that have been defined. As a result, the merchant can safely accept a credit card for payment from a holder, confident that the other participants will make sure that the merchant receives in their bank account the funds for the payment. There is not one huge piece of software written by one company that makes all that work. Rather, each participant knows there is a set of rules—the trust framework—to follow and they write code (and test and verify) for their part of the overall process.
+
+![The Credit Card Network - An Example of a Trust Framework](./images/The_Credit_Card_Network_-_An_Example_of_a_Trust_Framework.png)
+
+*The Credit Card Network - An Example of a Trust Framework*
+
+A governance framework enables an organization to count on the business and/or technical processes carried out by another organization. In many cases, trust frameworks have been able to work and most importantly, to scale. Common examples include credit card systems, electronic payment systems and the Internet domain name registration system, which all rely on a set of interdependent technical specifications, rules and agreements.
+
+An identity governance framework defines the rules for interactions between organizations for handling identity, authentication (who you are), and authorization (what you are allowed to do). The Sovrin governance framework defines those rules for the participants using the Sovrin Network utility, including stewards (those operating Sovrin nodes), endorsers (those writing transactions to the ledger), authors (those creating transactions to be written to the ledger) and readers (anyone reading data from MainNet). Sovrin’s volunteer-based working groups have also defined a higher-level, generic governance framework that can be the basis for domain-specific governance frameworks. For example, banks and credit unions might use Sovrin’s generic governance framework as the basis for publishing a governance framework for what credential schemas to use and what processes an issuer must carry out before issuing a credential. Recall what we said in Chapter 3 about the need for a verifier to trust the issuer. It’s through a governance framework that a verifier can know about the issuers processes prior to issuing a credential so they can decide if they trust the issuer.
+
+### Elements of the Sovrin Foundation
+
+So what is the Sovrin Network? The Sovrin Network is a single, global instance of Hyperledger Indy. Each node is operated by a Sovrin steward, an organization (company, government, university, etc.) that has agreed to a legal agreement that defines how they will operate their node (minimum hardware, network access, monitoring, security, maintenance, etc.) within the rules defined in the Sovrin governance framework. As of April 2021, Sovrin stewards number more than 70 and include banks/credit unions, universities, law firms, and technology companies around the world (see the following image). The Sovrin Foundation, following the governance frameworks created by the Sovrin working groups, provides governance for the network, including executing legal agreements with participants, monitoring the operation of the nodes, and coordinating software upgrades. The Foundation includes a Board of Trustees to oversee the business and legal aspects of the network and a Technical Governance Board to oversee the technical aspects. The Sovrin technical team publishes a network dashboard showing statistics on the network.
+
+![The Sovrin Dashboard (April 2021)](./images/The_Sovrin_Dashboard__April_2021_.png)
+
+*The Sovrin Dashboard (April 2021)*
+
+And of course, the Sovrin Network has participants that use the network. Some users, called “endorsers” are entrusted through reputation, legal agreements and their adherence to the Sovrin governance framework to write data to the public ledger for themselves and others. The remainder of the participants in the system (identities) use the steward-operated nodes to read and (via endorsers) to write to the Sovrin public ledger.
+
+With a global network in place, Sovrin can be used to solve the identity on the Internet problem. Users can create and write decentralized identifiers (DIDs) and verifiable credential metadata to the Sovrin ledger, and use that data to issue verifiable credentials to holders. And, as we know from Chapter 2, holders can prove claims from those credentials to verifiers to enable trusted digital transactions without the verifier having to ask the issuer about the holder.
+
+### Transaction Author Agreement
+
+An example of the Sovrin governance framework in action is the **transaction author agreement (TAA)**. Think of it as equivalent to an end-user license agreement (EULA) that every software package and website makes you acknowledge (and that no one ever reads). Unlike blockchain implementations such as Bitcoin, where anyone can operate nodes and write transactions, with Sovrin, a group of permissioned, known organizations (stewards) operate the nodes and reach consensus on what data to write to the blockchain. Further, those organizations have lawyers that want to mitigate the risk that their organization will be liable if someone submits a transaction that puts illegal information on the blockchain (such as in this example: [illegal prime](https://en.wikipedia.org/wiki/Illegal_prime)). As such, with every transaction, the writer (called the transaction author) must acknowledge that they agree to the TAA. The TAA itself is not in the transaction, but the location of the TAA they acknowledged, and the hash of the agreement are in the transaction, along with a code indicating how they reviewed the TAA. You see why it’s like the EULA—an agreement that few (no one?) will read, but is written by lawyers, and that they think will protect their organization. That’s a lot different from Bitcoin!
+
+> **NOTE:** *Like the pluggable payment interface, Hyperledger Indy enables the TAA interface, but does not require an instance of Indy to use one. Each Indy blockchain instance is configurable and one set of configuration parameters covers the TAA, if it is required, where the text of the current TAA resides, the hash, and the enumeration of the ways that the TAA can be acknowledged. For the Sovrin instance of Indy, the TAA is enabled, and the TAA used is one agreed upon by the Foundation and its steward members.*
+
+### Cost of Using Sovrin
+
+At the time this course is being updated (April 2021), the Sovrin Foundation charges those writing transactions to the ledger to help offset the cost of operating the utility. Recall from the earlier discussion that only those with the “endorser” role can write to a Sovrin ledger. They can write transactions to the ledger for their own purposes, or they can sign transactions authored by non-endorsers before the transactions are submitted for writing to the ledger. In both cases, their signature (in the cryptographic sense) on the transaction is sufficient to have the transaction written. And, in both cases, the responsibility for paying the Sovrin Foundation for the transaction comes back to the endorser. The relationship between the endorser and the author is between those two parties, as are any costs involved in the endorsing of transactions.
+
+The transaction write [charges are modest](https://sovrin.org/issue-credentials/), are likely necessary as a mechanism to prevent abuse of the network and are used to fund the operation of the Sovrin Foundation. Since only issuers of credentials need to write to the ledger, they bear the brunt of the costs. Later in this chapter, we’ll go into what transactions are necessary to issue credentials and we can calculate the costs that issuers will face.
+
+### Beyond Sovrin: Other Indy Networks
+
+For the past several years, the Sovrin MainNet was the only public production instance of Hyperledger Indy. However, there are some new networks that are coming online. [Indicio.Tech](https://indicio.tech/) launched a TestNet in 2020 and as of this course update (April 2021) has launched a production MainNet. Like Sovrin, Indicio’s network is intended to be a global utility, available worldwide, with nodes operating in a number of jurisdictions. As well, in April 2021, the IdUnion Indy network project kicked off in the European Union (EU). Like Indicio, IdUnion started a test network in early 2021 and has funding to launch the IdUnion MainNet later in 2021. Unlike Sovrin and Indicio, the IdUnion network is intended to serve only users in the EU for writing transactions. Of course, by necessity, verifiers may be anywhere so anyone in the world can read from the IdUnion ledger. The idea of national/regional Indy networks comes from the idea that as the use of verifiable credentials becomes ubiquitous, the reliability of ledger utilities becomes critical. Since the ledgers are critical, they need to be part of a nation’s critical infrastructure, just like the Internet, emergency telephone systems (for example, 911 or 112), the electrical grid, etc. Other countries have also begun exploring creating their own ledger.
+
+Each of the networks mentioned here (including Sovrin) operate test networks in addition to their production network. The test networks serve two purposes:
+
+- They provide a sandbox for testing upgrades to the network before they are applied to the production network.
+- They allow ToIP application developers to run test or proof-of-concept implementations prior to going to production.
+
+The networks can also be used by developers building apps, although they generally use locally hosted ledger instances.
+
+With more networks though, we have some new challenges that are still being addressed. The Indy “networks of networks” problem (and solution) is discussed later in this chapter.
+
+### So, What Goes on the Blockchain?
+
+As we have mentioned, there is no private data on the blockchain. Such data is stored in the verifiable credentials that go directly to the person (or enterprise) and into their personal, encrypted storage—into their wallet. There is absolutely nothing from a credential on the blockchain. So what does go on the blockchain, and why do we need it?
+
+When you present claims for a credential to somebody in a proof, you don’t want the verifier to go to the issuer to ask, “Hey, can you confirm this information?” Just as when you go into a pub and have your driver’s license validated, you don't want the bartender calling the government to ask, “Can you confirm this person is over 18?” It’s the same with verifiable credentials—the verifier goes to a public location, usually a ledger (a blockchain), where they get the cryptographic material (public keys and other information) necessary to verify the proof they have been given.
+
+So, what exactly does go on the blockchain? Let’s go through the two, three or four pieces of data that an issuer puts on the ledger. As well, you can use these [instructions](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS172x/BrowsingAnIndyLedger.md) (also used in Chapter 3) to look at what the different transaction types look like on an Indy network.
+
+![What Goes on the Blockchain](./images/What_Goes_on_the_Blockchain.png)
+
+*What Goes on the Blockchain*
+
+### Public DIDs
+
+When the issuer wants to issue a credential, they **must** have a DID on the blockchain that allows verifiers to find out who they are, and in the process, why the credentials they issue can be trusted. Note that the verifier does not get any information from the blockchain other than the DID of the issuer. Whether the verifier can trust the issuer is determined in other ways, that we’ll talk about later in the course.
+
+### Schemas
+
+Next, the issuer **may** put a schema on the blockchain that says in effect, “When I issue a credential, it's going to have these fields in it.” An issuer might put their own schema on the ledger, or they can use one that someone else put on the ledger. In the current iteration of Indy, the schema is just a list of claim names. We’ll talk later in the course about other ways that the verifier can learn more than just the claim names.
+
+Why might an issuer use someone else’s schema? If the issuer is one of many that issue credentials of a common type, it is much easier for everyone if they use a common schema. For example, while every university in the world could define their own “diploma” schema, verifiers would be much happier if one common schema was defined and it was used by all universities. Indy doesn’t require common schemas be used but it’s easy to do and encouraged.
+
+### Credential Definitions
+
+Before an issuer can issue a credential using a schema, they **must** put a credential definition on the blockchain. A credential definition says, “I'm an issuer using this DID, I'm going to use this schema for my credentials, and here are the public keys (one per claim) that I’m going to use to sign the claims when I issue a credential.” In all, an issuer must have a DID, a schema and a credential definition on the blockchain before issuing credentials. A credential definition is also called a claim definition and, internally on Indy, a **CLAIM_DEF**.
+
+### Revocation Registry
+
+The issuer **may** want to be able to revoke credentials and if they do, they must also write a revocation registry to the ledger before issuing credentials. The revocation registry links back to the credential definition and allows the issuer to unilaterally revoke credentials, independent of the holders. Only the holder of a credential can tell if their specific credential has been revoked by looking at the revocation registry. But, with the magic of a zero-knowledge proof (ZKP), a holder can prove (and a verifier can verify) that the holder’s credential has not been revoked—provided of course it has ***not*** been revoked. Constructing that “proof of non-revocation” is done by the holder/prover when creating a presentation.
+
+While we won’t go into the math behind the revocation scheme, here are the mechanics of using Indy/Aries revocation:
+
+- Each revocable credential that is issued has a unique identifier known only to the issuer and holder. Further, there is a number stored on the ledger (called an accumulator) that is updated every time the issuer revokes one or more credentials. If the holder’s credential has not been revoked, the holder can calculate and put in the proof a pair of numbers that the verifier can combine with the accumulator (from the ledger) to get a known result proving non-revocation.
+- If the holder’s credential has been revoked, the holder is unable to generate the numbers necessary to be combined with the accumulator to get the known result. In other words, once the credential has been revoked, the holder cannot prove non-revocation. Yes, that is a double-negative, but that is what is happening.
+
+Through the process, the unique identifier of the credential is not exposed to the verifier. To check again for revocation, the verifier must ask the holder for another proof, which may at first glance seem a little odd. Here’s why Indy revocation works that way:
+
+- The verifier is not given an ID for the credential so the verifier has no way to check that a credential referenced in a proof they received earlier hasn’t subsequently been revoked.
+- The verifier is not given a unique credential ID because it would provide the verifier with a correlatable identifier for the prover—exactly what the ZKP properties of Indy verifiable credentials are designed to prevent. Such an identifier isn’t exposed in the presentation of claims, and it is also not exposed in proving non-revocation.
+
+The expectation is that for the most part, issuers will revoke credentials on a periodic basis, such as once an hour, or once a day. The issuer will monitor the revocations through the period, track the IDs of the credentials to be revoked, calculate an update to the accumulator to revoke those credentials and write the new accumulator value to the ledger. If the business use case needs more immediate notifications of revocations, the issuer can update the accumulator as each credential is revoked. On the Sovrin Network, there is a [cost to write updates](https://sovrin.org/issue-credentials/) to a revocation registry, and that will no doubt play into the business requirements of when revocations occur.
+
+### Recapping What Goes On the Ledger
+
+So that’s all that goes on a ledger. An issuer can issue a million (or a billion!) credentials, but none of them go on the blockchain. All of them refer back to those few other pieces of data that did go on the blockchain and they are:
+
+- DID (required)
+- schema (required, but could be written by the issuer or someone else)
+- credential definition (required)
+- revocation registry (optional, used only if it is necessary to be able to revoke credentials)
+
+So, for all the issued credentials of one type from one issuer, there are only two, three or four blockchain transactions executed.
+
+### Sovrin Costs of Writing
+
+As mentioned before, there is a cost to writing to some ledgers, such as the Sovrin ledger. Here is a back-of-the-envelope calculation of what an issuer will pay (as of April 2021) for issuing credentials on the Sovrin ledger. For this, we’ll assume the following transactions:
+
+- a DID for the issuer - $10US
+- a schema (the issuer creates their own) - $50US
+- a credential definition - $25US
+- a revocation registry - $20US
+
+There is an ongoing cost for revoking credentials and updating the issuer’s DID. We’ll assume the following annual costs:
+
+- one DID update - $10US
+- a revocation registry update each business day - 200x$0.10US
+- one every second business day real time credential revocation - 100x$0.10US
+
+That’s a total of $105US for an issuer to begin issuing credentials, plus an ongoing annual cost of $40US for DID updates and revocations.
+
+Other potential transactions include issuing more credential types (no new DID needed, possibly a schema, a credential definition and likely a revocation registry), additional revocation registries (if the issuer runs out of credential IDs to be issued for a given credential type), and updates to multiple revocation registries. And of course, the rate of revocations might be different than assumed above.
+
+> **NOTE:** *If your application is not using the Sovrin ledger but rather some other instance of an Indy network, there may or may not be a transaction cost, and if there is a cost, it may be quite different from that of the Sovrin Network.*
+
+### Indy’s “Network of Networks” Challenge: The “Network of Networks” Issue
+
+As we mentioned earlier, for a long time the only public production Indy network was the Sovrin MainNet. With more Indy networks coming online, a missing feature in Indy has been exposed. Specifically, the identifiers for DIDs and other ledger objects do not define on what ledger the object resides. While that was fine when there was only the Sovrin network, it’s a serious issue when there are many ledgers. In the Indy community, this is known as the “network of networks” challenge, where the goal is to allow each Indy network to operate as one of many coordinated networks.
+
+### Indy Identifiers
+
+An example of the “network of networks” problem is demonstrated by the following DID and schema identifiers as referenced in current Indy data structures such as credentials and presentations:
+
+- DID: **`did:sov:BWmxvSzWSs5mjftrKZN4hL`**
+- Schema: **`Nkm6Gvyb5wCru52raJ8DkV:2:L1_DOC:1.1`**
+
+With the DID identifier, the DID type is specified (“**sov**”), but not what instance of Indy is being used. Even before there were other public production instances of Indy, the lack of a way to tell what ledger an object was on was a bother because Sovrin in fact had three networks (Main, Staging and Builder). With the schema identifier, the problem is about the same—the identifier for the DID that created the schema is present (“**Nkm..DkV**”), but again, there is no reference to what ledger the schema resides on.
+
+The assumption made in Indy was that an agent would, on startup, connect to a single Indy instance and all identifiers that were encountered would be created or found on that ledger. Easy! However, as soon as there was more than one ledger, this assumption became a problem that has still (as of April 2021) not been fully addressed.
+
+The first cut at the solution was to provide a way for agents (such as mobile wallets) to change what ledger they are using through settings. In the image below, an example “pick your network” screen is displayed from a popular wallet. This is not a great approach. First, it’s really lousy for users to have to know what network they have to use--or even what an Indy network is! Worse, it doesn’t deal with the situation where a holder needs to create a presentation using two credentials, and one issuer is on one network and the other issuer is on a second network.
+
+![Mobile Wallet Network Selection Setting Screen](./images/Mobile_Wallet_Network_Selection_Setting_Screen1.png)
+
+*Mobile Wallet Network Selection Setting Screen*
+
+A better, but still far from perfect solution was first implemented by the folks at LISSI in Germany (the same folks behind the IDUnion Indy network). Rather than having the user pick the network to use, the LISSI wallet has some preconfigured networks defined, connects to all of them, and when needing to read an object from a ledger, checks all the connected ledgers for the object. It’s not efficient, but it’s a lot easier on the users. It still has the problem that only the networks that LISSI already knows about can be used.
+
+### Solving the “Network of Networks” Challenge: did:indy
+
+The real solution for the Indy “network of networks” challenge is being created by the Indy community as this course is being updated (April 2021). A new DID method called “**did:indy**” is being specified that defines a new format for ledger object identifiers that includes a “namespace” for each identifier that defines on which ledger the object resides. Specifically, after the **did:indy** part of the identifier, and before the ledger-specific identifier is placed the name of the network on which the object resides. For example, for the two objects (DID and schema) we listed earlier, the new identifiers would be:
+
+- DID: **`did:indy:sovrin:staging:BWmxvSzWSs5mjftrKZN4hL`**
+- Schema: **`did:indy:idunion:Nkm6Gvyb5wCru52raJ8DkV:2:L1_DOC:1.1`**
+
+The namespaces within the identifiers are highlighted such that we can tell that the DID resides on the Sovrin staging network, while the schema resides on the production IDUnion network. With references to those objects in credentials, presentations and other Indy data structures, it is easy for an agent to connect to the appropriate network to access the object data.
+
+For example, when a verifier receives a proof from a prover, they can tell what Indy instance to use to get the credential definition (and hence the public keys used to sign the claims) and the revocation registry information. It’s likely that both parties are using “well known” Indy ledgers, but if not, the verifier can decide if it wants to automatically find and connect to the previously unknown ledger being used by the prover.
+
+Once specified, **did:indy** will take a little bit of time to become readily available. First, the ledger component of Indy (**indy-node**) will have to be updated to support the new DID method specification. In parallel, the Indy components used by agents will need to be updated (**indy-sdk** and **indy-vdr**). Finally, the new capabilities must be built into Aries agents, including Aries wallets.
+
+The LISSI “try all the networks” approach will work for a while, but it will be a race between completing **did:indy** and more production Indy networks spinning up.
+
+### Summary
+
+In this chapter, you have learned that the Indy ledger is a public, permissioned ledger and that consensus on the ledger is arrived at using the Plenum algorithm. The concept of a “governance framework” was discussed as the business parallel to the technical components of Indy. We talked about public production instances of Indy, such as the Sovrin Foundation’s MainNet, a global instance of Indy that has been running for almost four years, and some new production instances that are just starting to come online. And we discussed the “network of networks” challenge these new networks are highlighting. We looked at exactly what goes on the blockchain, reiterating (again and again) that no private data ever (ever!) goes on chain. The main takeaway from this chapter is that blockchain is enabling us to move away from identity challenges we discussed in Chapter 1 and move towards a more trusted, self-sovereign identity Internet. In the next chapter, we will delve into Aries and how agents will enable secure, peer-to-peer communication and facilitate the exchange of verifiable credentials.
 
 ## Chapter 5: The All-Important Agent, Or Rather, Agents!, Incomplete section
 
-### Introduction, Incomplete1 min1 minute
+### Introduction: Chapter Overview
+
+
+
+
+
 
 ### So Many Agents!, Incomplete5 min5 minutes
 
