@@ -248,7 +248,7 @@ In the next chapter, we’ll look at how Hyperledger Indy, Aries and Ursa enable
 
 ## Chapter 2: Adding a Layer of Trust to the Internet
 
-### Chapter Overview
+### Introduction: Chapter Overview
 
 How do we fix the issue of trust on the Internet? In the last chapter, we talked about a number of challenges with the current state of identity on the Internet. In this chapter, we’ll talk about solutions that are becoming available that will add that missing layer of trust. To do that, we will move from paper credentials discussed in the last chapter to verifiable credentials—credentials we can use (and trust!) online. We will also introduce the important concepts of self-sovereign identity (SSI) and trust over IP (ToIP). Lastly, we will explore the technology that enables verifiable credentials (for example, decentralized identifiers (DIDs) and agents), and how all of this together makes the Internet a much more trusted place.
 
@@ -362,9 +362,7 @@ There are also privacy trade-offs in using paper verifiable credentials. The pri
 
 Paper verifiable credentials to eliminate forged documents without requiring everyone to use a smart device is an appealing approach—but the privacy implications must be kept in mind. Further, since the “presentation” of the verifiable credential is fixed at the time it is issued, there is no way to use selective disclosure, or for the verifier to ask for anything other than what the holder has on paper. So, while some of the verifiable credential capabilities are possible, a lot of the power is lost.
 
-### Self-Sovereign Identity (SSI)
-
-**What Is Self-Sovereign Identity?**
+### Self-Sovereign Identity (SSI): What Is Self-Sovereign Identity?
 
 Self-sovereign identity (SSI) is a term you may have heard in connection with the Hyperledger identity projects, Indy, Aries and Ursa. Together, these Hyperledger capabilities can be the basis for accomplishing SSI. So what is SSI—and what isn’t?
 
@@ -407,15 +405,13 @@ The Sovrin Foundation is a private-sector, international non-profit that was est
  
 A number of these principles are technical in nature and are enabled by Indy, Aries and Ursa. Some are about how those technical projects are managed—for example, transparency by using open source software based on well-defined standards. Others are about how the technology is used, and while Indy, Aries and Ursa focus on making it easy for entities to implement SSI solutions, governance—such as the European Union’s General Data Protection Regulation (GDPR)—is still necessary.
 
-### Decentralized Identifiers (DIDs)
-
-**What Are Decentralized Identifiers?**
+### Decentralized Identifiers (DIDs): What Are Decentralized Identifiers?
 
 While verifiable credentials are an important component of SSI, a thing called a **decentralized identifier** (DID) is a key enabler for verifiable credentials. DIDs are a new type of identifier that is in the process of becoming a World Wide Web Consortium (W3C) [standard](https://www.w3.org/2019/did-wg/). As we discussed, the verifiable credential model requires a decentralized ecosystem in order to work. Such an ecosystem is brought about with DIDs and agents (discussed further in the chapter).
 
 DIDs are a special kind of identifier that are created by their owner, independent of any central authority. Per the [DID specification](https://w3c.github.io/did-spec/), a DID looks like the following and is similar to an HTTP address but used differently.
 
-**What does a DID look like?**
+### What does a DID look like?
 
 ![An Example of a DID Updated](./images/LFS172x_CourseGraphics-02.png)
 
@@ -425,30 +421,30 @@ DIDs are a special kind of identifier that are created by their owner, independe
 
 DIDs are:
 
-  - A new type of uniform resource identifier (URI).
-  - Created by anyone at any time.
-  - Globally unique.
-  - Highly available.
-  - Cryptographically verifiable.
+- A new type of uniform resource identifier (URI).
+- Created by anyone at any time.
+-  Globally unique.
+- Highly available.
+- Cryptographically verifiable.
 
 What does all that mean? Let’s go through each of those attributes in turn:
 
-  - Like the URLs (universal resource locator) that we are familiar with (such as the one for this web page that is in the address field of your browser), DIDs can be resolved. When we pass a valid DID to a piece of software called a DID Resolver, it works like a browser given a URL, resolving the identifier (URL or DID) and returning a document. However, instead of a browser returning a web page, a **DID Resolver** returns a **DID Document** (DIDDoc). A DIDDoc is a JSON document whose format is defined in the DID specification. We’ll talk about the elements of a DIDDoc in a moment. A
-  - DID can be created by anyone, not just a central service such as a Certificate Authority (CA). People, organizations and things can all create, publish and share DIDs. Further, at any time, the controller of the DID (usually the creator) can update the DID—change the DIDDoc that is returned when resolving the DID. That ability can be important in certain situations.
-  - That DIDs are globally unique means that properly generated, each DID is unique across the globe. The “properly generated” caveat means that if you follow the rules for creating a specific type of DID, it will be globally unique. That’s the type of detail that Hyperledger Indy takes care of for you.
-  - Highly available means that DIDs can be resolved even if some servers are down. Since DIDs are often resolved by reading from a blockchain, and there can be many copies of a given blockchain on servers across the world, DIDs are highly available. Put another way, DIDs are not susceptible to a central implementation with a single source of failure.
-  - Cryptographically verified means that the control of a DID can be verified by asking the DID controller (the person, organization or thing that created the DID) to prove their control over the DID by having them prove control of a private key that is related to a public key.
+- Like the URLs (universal resource locator) that we are familiar with (such as the one for this web page that is in the address field of your browser), DIDs can be resolved. When we pass a valid DID to a piece of software called a DID Resolver, it works like a browser given a URL, resolving the identifier (URL or DID) and returning a document. However, instead of a browser returning a web page, a **DID Resolver** returns a **DID Document** (DIDDoc). A DIDDoc is a JSON document whose format is defined in the DID specification. We’ll talk about the elements of a DIDDoc in a moment. A
+- DID can be created by anyone, not just a central service such as a Certificate Authority (CA). People, organizations and things can all create, publish and share DIDs. Further, at any time, the controller of the DID (usually the creator) can update the DID—change the DIDDoc that is returned when resolving the DID. That ability can be important in certain situations.
+- That DIDs are globally unique means that properly generated, each DID is unique across the globe. The “properly generated” caveat means that if you follow the rules for creating a specific type of DID, it will be globally unique. That’s the type of detail that Hyperledger Indy takes care of for you.
+- Highly available means that DIDs can be resolved even if some servers are down. Since DIDs are often resolved by reading from a blockchain, and there can be many copies of a given blockchain on servers across the world, DIDs are highly available. Put another way, DIDs are not susceptible to a central implementation with a single source of failure.
+- Cryptographically verified means that the control of a DID can be verified by asking the DID controller (the person, organization or thing that created the DID) to prove their control over the DID by having them prove control of a private key that is related to a public key.
 
 This last point brings us to what is in the DIDDoc. Notably, a DIDDoc contains (usually) public keys whose private keys are held by the entity that controls the DID, and (usually) service endpoints that enable communication with that entity. This means that with a DID, you can:
 
-  - Resolve a DID to get a DIDDoc.
-  - Within the DIDDoc, find a public key and an endpoint for the entity that controls the DID.
-  - Use the endpoint to send a message to that entity.
-  - In the message, ask them for proof they have the private key related to the public key.
-    - Since often a public key in the DIDDoc is used to encrypt the message sent, just being able to respond to the message is “proof” of control of the DID. Without the private key they could not have decrypted the message.
-    - What the sent message might ask is that the controller of the DID provide a verifiable credential presentation.
-  - Receive back the proof.
-  - Verify that proof.
+- Resolve a DID to get a DIDDoc.
+- Within the DIDDoc, find a public key and an endpoint for the entity that controls the DID.
+- Use the endpoint to send a message to that entity.
+- In the message, ask them for proof they have the private key related to the public key.
+  - Since often a public key in the DIDDoc is used to encrypt the message sent, just being able to respond to the message is “proof” of control of the DID. Without the private key they could not have decrypted the message.
+  - What the sent message might ask is that the controller of the DID provide a verifiable credential presentation.
+- Receive back the proof.
+- Verify that proof.
 
 ### DIDs from a Business Perspective
 
@@ -653,7 +649,7 @@ Let’s go back to bullet points in the Chapter 1 summary and see how the capabi
 
 ## Chapter 3: SSI Using Indy, Aries and Ursa
 
-### Introduction
+### Introduction: Chapter Overview
 
 In Chapter 2, we introduced the concept of self-sovereign identity and how the verifiable credentials model adds a needed layer of trust to the Internet. In this chapter, we will introduce Hyperledger Indy, Aries and Ursa and how the technologies from these projects (surprise!) enable SSI. Along the way, we’ll continue to dig into the verifiable credential model and learn more about decentralized identifiers, agents, zero-knowledge proofs and selective disclosure.
 
@@ -1157,28 +1153,352 @@ In this chapter, you have learned that the Indy ledger is a public, permissioned
 
 ### Introduction: Chapter Overview
 
+In the last chapter, we looked a lot at Hyperledger Indy and in particular, what happens on the ledger. This chapter delves into Aries—specifically, Aries agents, how your digital wallet will work and how keys and the crypto behind it all keeps your data your data!
+
+Remember our goal. We want to move away from centralized identifiers, unwanted correlation of data and the issues that come with user IDs, passwords and personal data on servers across the Internet (Chapter 1). The Aries agents and agent protocols we are about to discuss will enable an Internet where the user is in charge and where they control their own data! Also remember that the goal of Aries is to be blockchain agnostic so people can start building Aries agents regardless of the blockchain they want to use. Pretty cool stuff!
+
+### Learning Objectives
+
+By the end of this chapter you should:
+
+- Know that there are many types of agents, with different roles.
+- Be familiar with the components of an agent, including the storage and ledger interfaces.
+- Understand at a high level how agent messaging works and connections are established.
+
+### So Many Agents! What Is an Agent?
+
+Formally, an Aries **agent** is a piece of software that enables an entity (a person, organization or thing) to assume one or more of the roles within the verifiable credential model—an issuer, holder and/or verifier—and allows that entity to interact with others that also have verifiable credential roles. Agents may do (many!) other things but it’s their ability to handle verifiable credentials that is their defining characteristic.
+
+Agents use private, pairwise DIDs to secure their peer-to-peer communications. With a different pairwise DID for every relationship, each with keys and endpoints that you control, communication between agents is end-to-end encrypted, secure and safe. And by asking for and verifying presentations of data from trusted issuers, you can be certain who is on the other end of the connection.
+
+There are a number of categories of agents that can be created for different purposes, some obvious and others less so. Let’s take a look.
+
+### Personal Agents
+
+For a person, an agent will most commonly be a mobile app that feels much like the messaging apps you use today—WhatsApp, Messenger, etc. Your mobile agent will help you establish connections, manage the set of relationships you’ve created, and you will exchange messages with those connections. Some of those messages you receive will be offers of credentials and others will be requests for you to prove claims from one or more of those credentials. You may be able to (and should!) also initiate requests for presentations, so that you can verify attributes of those with whom you are messaging. And, like any messaging app, some of those messages can be, well, just text messages that tell you something or ask you something or provide you with a picture of a cat. Of course, with the goal of self-sovereign identity in mind, despite having the feel of a messaging app, the privacy and security offered by the Aries agents are the primary focus.
+
+![Example of an Aries Agent App](./images/Example_of_an_Aries_Agent_App.png)
+
+*Example of an Aries Agent App By [Streetcred.id](https://streetcred.id/)*
+
+But personal agents don’t have to be mobile. They could be run on a laptop or desktop computer as applications. Agents directly controlled by individuals might also be operated by a service and run entirely (including all keys) in the cloud. That model, however, is at odds with our goal of controlling your own agent—and your data. If an agent is running in the cloud, someone else is operating the agent and you are not fully in control. At that point, it is about how much you trust that service.
+
+### Enterprise Agents
+
+An enterprise, like a company or a department within a government, will have agents that run on servers to verify proofs of claims submitted by their clients and issue credentials to clients. For example, a health department, prior to issuing an operating permit, might use an Aries agent that messages with the Aries agent of a bakery owner to verify (using proofs) that:
+
+- The bakery is appropriately registered as a company.
+- Has proper insurance.
+- Has received safe food handling certification.
+ 
+![Health Department Enterprise Agent Could Verify Bakery’s Proof of Claims](./images/Health_Department_Enterprise_Agent_Could_Verify_Bakery_s_Proof_of_Claims.png)
+
+*Health Department Enterprise Agent Could Verify Bakery’s Proof of Claims*
+
+Periodically, inspectors might visit the location, verify the operating permit using their agent, and after a manual inspection, trigger the health department’s agent to issue inspection certificates (good and bad) as verifiable credentials to the owner’s agent. In extreme cases, the health department’s agent can revoke the bakery’s operating permit.
+
+As the saying goes, corporations are people too. Well, maybe not, but corporations in the future will likely need to have their own wallet to receive, hold and prove verifiable credentials about the enterprise itself. Just as people have birth certificates, companies have papers that document their registration with the jurisdiction in which they operate. As the example above shows, organizations receive various licenses and permits (as verifiable credentials) related to the business they operate and from time to time must present claims about themselves from those credentials. These identity enterprise agents may be separate from the “issuer/verifier” type enterprise agents talked about above. Enterprise issuer/verifier agents are part of the business processes between the enterprise and its clients, while an enterprise’s identity agent is responsible for managing and proving attributes about itself.
+
+An enterprise wallet might also be used to empower individuals associated with the enterprise to take actions for that enterprise. While an enterprise wallet may do much of its work based on rules for handling transactions (offers of credentials, requests for presentations), the people that have authority in the organization will ultimately make the decisions. Thus, the enterprise wallet might issue verifiable credentials to individuals that delegate authority to that person to act on behalf of the enterprise. For example, the head of Finance at Mary’s Bakery might be given a credential from the enterprise wallet that shows her relationship to the enterprise, and could then use that to start a process with a bank to open a business bank account for the bakery. We’ll talk more about this scenario in the last chapter of this course.
+
+### Device Agents
+
+Internet of Things (IoT) devices might embed agents capable of issuing verifiable credentials based on data from the device’s sensors. The devices themselves might be certified by a standards organization, and by immediately putting the sensor data into a verifiable credential, the data can be tied to the device and proven not to be tampered with as it is used. For example, sensors in your car can generate verifiable credentials to track mileage and maintenance on the vehicle and that data can be proven when the car is sold. Or, inspection stickers on gas pumps could be handled by the pump issuing verifiable credentials that could be monitored and only inspected when generating faulty data.
+
+![Another Example—Device Agent](./images/Another_Example_Device_Agent.png)
+
+*Another Example—Device Agent*
+
+### Routing Agents
+
+Another category of agents are routing agents. These are agents that serve as intermediaries to facilitate the flow of messages between other types of agents. And it turns out, there are lots of places we want or need to have such intermediaries. Because you cannot directly address a mobile agent across the Internet, a primary example of a routing agent is one that allows a mobile agent to send and receive messages. For example, an enterprise agent (or any other piece of software) can’t send a message containing (for example) an offer of a credential directly to a mobile agent (or any other app) on Alice’s phone. It’s just not technically possible. Instead, a mobile agent must have something that holds its messages until that mobile agent asks for them. In the Aries community, routing agents that hold messages for mobile agents are called “mediators.”
+
+![Mailbox](./images/Mailbox1.png)
+
+We’ll dive into this concept later in the chapter but for now it’s enough to know that the idea of the routing agent is not to be a destination for a message, but instead just a facilitator to move messages along, kind of like being a part of the postal system. And, like the postal system, a routing agent should not know anything about the contents of a message, just where the message needs to go. As such, whenever a routing agent is involved in handling a message, the sender puts the message into an envelope so the agent can’t see the message, just where it’s supposed to go. As you might imagine, such handling is done with encryption.
+
+![Routing Agents Move Messages Along](./images/Routing_Agents_Move_Messages_Along.png)
+
+*Routing Agents Move Messages Along*
+
+### Components of Agents: Architecture
+
+All Aries agents, regardless of the category, have a similar architecture. In this section, we’ll review the major components of Aries agents and talk about how the implementations of these components can be used to give an agent its personality. We’ll reference the picture below in summarizing the components.
+
+![Agent Components Updated](./images/LFS172x_CourseGraphics_Ch5-1.png)
+
+*Agent Components*
+
+### Key Management Service (KMS)
+
+An Aries agent (usually) has secure storage (called the key management service, or KMS) that is used for all of the information collected by the agent. At a low level, an Aries KMS is wrapper code around a standard database for storing DIDs, keys, connections, credentials and any other information the agent tracks. KMS implementations are pluggable (new implementations can be independently created and used) and two common reference implementations have been created for a range of use cases. An SQLite implementation can be used for small-scale agents, and a PostgreSQL implementation can be used for enterprise scalable deployments. SQLite might be used on a mobile phone to store thousands of records and Postgres on a server to store millions (or billions) of records. In either case, (almost) everything in the database is encrypted before it is stored.
+
+![Key Management Service](./images/LFS172x_CourseGraphics_Ch5_V2-21.png)
+
+There are two caveats in the paragraph above:
+
+- A static agent is a special type of agent that does not have a wallet. Instead, a static agent is configured at deployment time with the keys and connections necessary to do its work. In memory and CPU limited IOT devices, a static agent can be used if there are not enough resources for a wallet. No doubt other scenarios will arise where a static agent will be useful.
+- The only unencrypted data that goes into a wallet are optional tags that might need to be queried in other-than-equality expressions. It’s pretty obscure, but if your app needs to search the wallet for a record where the stored data is (for example) greater than a given value, you have to store the to-be-queried data in plaintext. Yes, that’s very obscure.
+
+As mentioned, KMS storage data is encrypted. Ideally, the management of the handful of keys for the encryption of the KMS data is handled by special hardware on the device (mobile phone, enterprise server, etc.) on which the agent runs, such as the biometric services (fingerprint, face ID) available on modern smartphones. Further, anything requiring processing using the many (many) keys stored in the KMS, including creating, storing, querying, retrieving, encrypting, decrypting, signing and verifying data, is only possible through calls to the KMS code. This layering is to prevent private keys from being accessed by generic agent code written by an arbitrary developer. Keeping keys secured within the open source KMS reduces the risk of security vulnerabilities in “user” code resulting in keys being exposed.
+
+### Agent Messaging Interface
+
+The **agent messaging interface** enables an agent to establish and manage connections with other agents and send and receive messages to those agents. The mechanisms an agent supports to transmit and receive messages depends on where that agent is deployed. Aries uses DIDComm (DID Communication) messaging protocols and is designed to be “transport-agnostic,” meaning that any communication method can be used to send messages. Many agents use the Web’s HTTP (or HTTPS) transport to send and receive messages, but any mechanism can be used for a given agent—web sockets, SMTP (email), XMPP, even hand-written notes (really!) can be used for transporting messages.
+
+![Agent Messaging Interface](./images/LFS172x_CourseGraphics_Ch5_V2-22.png)
+
+Although some of those transport methods might support encryption, Aries messaging does not rely on that, so even plaintext transport methods can be used. This is possible because the entire Aries message is encrypted (using Ursa), assembled into a standard structure (using JSON Web Encryption (JWE)), converted into a string of characters (usually using base64 encoding) and then sent as the payload using the selected transport mechanism. Anyone looking at the message sees only a really long string of characters. The intended recipient reverses the process to get back the delivered Aries message. The basic structure of Aries messages and the encoding/decoding of the messages during delivery is defined by the **DIDComm envelope protocol**, something we’ll discuss later in this chapter.
+
+In addition to sending and receiving messages, the agent interface manages the relationships the agent has with other agents and each conversation the agent has with each of those other agents. As we’ll learn, many conversations between agents require a sequence of messages and the agent interface tracks the state of those sequences (threads).
+
+### Ledger Interface
+
+The **ledger interface** enables all of the blockchain operations that we talked about in the previous chapter about Indy—reading and writing DIDs and other transactions to/from the ledger. While we’ve talked in this course about the Indy ledger, with Aries, Indy is not the only game in town. An Aries agent can be implemented with a pluggable interface to empower it to talk to other ledgers. As this course is updated (April 2021), most of the real world deployments of Aries to date have been based on Indy ledgers (especially, Sovrin’s global instance). However, in 2021 there has been a lot of activity in the community related to the use of Aries agents working with other ledgers.
+
+![Ledger Interface](./images/LFS172x_CourseGraphics_Ch5_V2-23.png)
+
+An Aries ledger interface consists of three parts:
+
+- a DID resolver
+- a writing mechanism
+- a verifiable credential handler
+
+### Ledger Interface: DID Resolver
+
+The simplest part of the ledger interface is the DID resolver for reading DIDs, which is architecturally similar for every DID method—given a DID, resolve it to return the DID’s DIDDoc. Ideally, the work to resolve any DID can be done by code within an Aries agent by deploying a pluggable resolver for each DID method. For example, most current production deployments of Aries agents handle three DID methods: Indy DIDs, peer DIDs for messaging and the special “`did:key`” method that allows a simple public key to be resolved using a standard transformation to a DIDDoc. However, as of this writing (April 2021) additional resolvers are being added to Aries implementations to enable reading data from other DID ledger instances.
+
+A problem with the plan of supporting all DID methods is that there are lots and lots of DID methods—too many to support as plugins within every agent. The plan to solve that in Aries (for agents that want to allow that) is to use a centralized **universal DID resolver** service. If a DID is encountered that cannot be resolved using local code in the agent, it is sent to a universal resolver, which will (try to) support all DID methods. The universal resolver will perform the resolution on behalf of the agent and return the result. The use of such a service implies that the agent must trust that service to respond with accurate data.
+
+### Ledger Interface: Writing Mechanism
+
+The second part of the ledger interface is the mechanism to write data to the ledger. This must be implemented within the Aries agent to ensure full control over the private keys involved in the transactions. Further, different ledger implementations will involve writing different transactions to the ledger, resulting in both the code and interface being different per ledger implementation. As with the resolver part, an Aries agent implementation will, out of necessity, only support writing for a small number of DID methods, often just one.
+
+### Ledger Interface: Verifiable Credential Handler
+
+The third part of the ledger interface is the verifiable credential handler. In this case the interface is likely to be pretty much the same across verifiable credential formats, with essentially the same sequence of events occurring for issuing credentials and presenting proofs. That said, the specific actions within the steps are different from one verifiable credential format to another. The actions to process an Indy zero-knowledge presentation are quite different from the verification of a credential-based presentation.
+
+### The Controller
+
+The final component of an Aries agent is the controller—the element that gives the agent its personality. The controller provides the “business rules” (for lack of a better term) that define what actions the agent will initiate and how the agent will respond to events. For a mobile agent, the controller is a mobile user interface that presents the options to a person who then supplies the business rules. For a verifiable credential issuer/verifier-style enterprise agent within an organization, the controller might be a legacy database system that manages customer data. Such an agent might enable customers to submit data by presenting claims from verifiable credentials instead of typing the information into a web form. That is a win for the organization—better quality data that does not need to be manually reviewed and verified, and a win for the customer—less typing and faster responses because the data does not need to be manually verified.
+
+![The Controller](./images/LFS172x_CourseGraphics_Ch5_V2-24.png)
+
+A controller is the software Aries developers build using Aries. All the capabilities that make up Aries go into the agent framework, and then an Aries developer, as an external party, writes the code (and business rules) to create an agent-enabled application. We’ll talk more about building such applications later in this chapter.
+
+### Agent Messaging: Peer-to-Peer Messaging
+
+The key capability of an Aries agent is peer-to-peer messaging—connecting with agents and sending and receiving messages to and from those agents to accomplish some interaction. The interaction might be as simple as sending a plaintext message, or more complex, such as negotiating the issuing of a credential or the presentation of a proof.
+
+![Peer-to-peer Messaging](./images/Peer-to-Peer_Messaging1.png)
+
+Enabling both the exchange of messages and the use of messaging to accomplish higher level transactions requires participants to interact in pre-defined ways, following mutually agreed upon protocols. As we noted in Chapter 3, messaging protocols are just like human ones, a sequence of events that are known by the participants to accomplish some shared outcome. Think back to the example of going out to a restaurant for a meal, with both the guests and the restaurant staff knowing the sequence of steps for their roles—greeting, being seated, looking at menus, ordering food, etc. Unlike human protocols (etiquette), messaging protocols need to be carefully specified and then implemented by multiple participants. And tested!
+
+![Two people talking to the waiter](./images/Conversation.png)
+
+With Aries, there are two levels of messaging protocols. Since all of the messaging is based on the exchange and use of DIDs, the messaging mechanism is called **DIDComm** for **DID communication**.
+
+![DIDComm: The Aries Messaging Protocols](./images/DIDComm-_The_Aries_Messaging_Protocols.png)
+
+*The Aries Messaging Protocols*
+
+At the lower level is the **DIDComm envelope protocol**, the method by which messages are exchanged, irrespective of the message content. You can think of the envelope protocol as being like the postal service. You write a letter, place it into an envelope, address it to a recipient, give it to the postal service and magically, it appears at the recipient’s door. And, just like the postal service, there is a lot of hidden complexity in the sending and receiving of messages.
+
+At a higher level are the **Aries content protocols**, tens of protocols that define back-and-forth sequences of specific messages to accomplish some shared goal. The simplest of these is one agent sending another agent a text message (“Hi, how are you?”). A much more complex protocol is issuing an Indy-style credential, where it takes at least three messages back and forth to offer, request and issue a credential. The set of messages, the roles of the participants, plus some extra details such as acknowledgments and error handling, define each of the many Aries protocols.
+
+With the DIDComm envelope protocol we don’t care about the content of the message, just the method by which a message gets delivered. With the Aries content protocols it’s the reverse—we know that the messages get delivered (we don’t care how), we only care about what to do with the content of each message.
+
+### Aries Messaging: Walkthrough
+
+In the following, we present a brief walkthrough of messaging between two Aries agents—establishing a connection and then using that connection for an issuer agent to issue a verifiable credential to a holder.
+
+We start with two agents that are deployed, unknown to one another and that for some reason want to connect. For example, it might be a user trying to connect to an enterprise, or two users with agents trying to connect to one another.
+
+### Establishing a Connection: The Invitation
+
+Since the agents don’t have any sort of trusted communication path at the start of the protocol, they have to use some sort of out-of-band (non-DIDComm) mechanism to begin communicating. A common way to convey the invitation is that one of the agents generates an invitation and displays it as a QR code that a mobile wallet app can scan, convert into a string of data and process. The invitation can be sent in other ways as well: emailed, displayed on a screen and copied/pasted, written on paper, etc. An invitation may even be implied—the DIDDoc of the public DID of an issuer might contain all of the information another agent needs to request a connection with the issuer’s agent. Basically, any method of sending the necessary plain text from one agent to another.
+
+![The Invitation Updated](./images/LFS172x_CourseGraphics_Ch5_V2_Ch5-11.png)
+
+*The Invitation*
+
+The invitation is a chunk of plaintext (not encrypted) data (in JSON) that contains a unique identifier and the same sort of information that is in a DIDDoc—notably a public key and a service endpoint. It is the way an inviter says to the invitee “Hey, connect with me!” The invitation is in plaintext because the inviter has no public key for the invitee with which to encrypt the message.
+
+### Establishing a Connection: The Connection Request
+
+With the invitation in hand, the invitee can use the public key and service endpoint to get a secure message to the inviter. If the invitee wants to accept the invitation, it creates a new DID and DIDDoc for the relationship that is being formed and places the invitation identifier and the new DIDDoc into a connection-request Aries protocol message. It also creates in its secure storage a connection identifier and record that will hold all of the information it collects about the connection. The DIDcomm envelope protocol is used to package the content protocol message, encrypting it using the public key from the invitation and sending it to the service endpoint in the invitation.
+
+![The Connection Request Updated](./images/LFS172x_CourseGraphics_Ch5-9.png)
+
+*The Connection Request*
+
+### Establishing a Connection: The Connection Response
+
+The inviter listening for messages on its service endpoint receives the message from the invitee and decrypts it to find the connection-request message. The invitation identifier in the message informs the inviter with what invitation to associate this message. It too creates a connection identifier and record, saving it in the DID and DIDDoc from the invitee. It then creates a DID and DIDDoc, saves it in the connection record, and packages the data into a connection-response Aries content protocol message. That message is packaged (using the DIDComm envelope protocol) and sent to the invitee.
+
+![The Connection Response Updated](./images/LFS172x_CourseGraphics_Ch5-10.png)
+
+*The Connection Response*
+
+### Establishing a Connection: The Connection Establishment
+
+When the invitee receives the message, it saves the other agent’s DID and DIDDoc in the connection record and the connection is established. The two agents are connected with a secure, private, end-to-end encrypted messaging channel. That’s huge! Of course, the parties still don’t know much about each other (just each other’s DIDs), but that will come after—by exchanging presentations.
+
+![The Connection Establishment Updated](./images/LFS172x_CourseGraphics_Ch5_V2_Ch5-4.png)
+
+*The Connection Establishment*
+
+We have skipped over a lot of the details that make this protocol reliable, reusable and secure. At this level, however, it not only shows how connections are established but also provides a good demonstration of Aries content protocols, showing how a protocol:
+
+- Has participants with different roles (e.g., inviter, invitee).
+- Uses a series of message types (e.g., invitation, request, response).
+- Uses expected data elements in each message type (e.g., ID, DID, DIDdoc).
+- Sends a threaded sequence of messages that trigger events to move the protocol through a series of states (e.g., invited, requested, established).
+- Sends messages asynchronously. That is, the message is sent and the sender does not wait for a response. Responses are sent as new messages. This is different from the HTTP protocol, which is a synchronous (request-response) protocol.
+
+This process encompasses two protocols called the **Out-of-Band** and **DID exchange** protocols which are documented in GitHub in the Aries Request for Change (RFC) repository, “[Aries RFC 0434: Out-of-Band Protocol 1.1](https://github.com/hyperledger/aries-rfcs/tree/master/features/0434-outofband)” and “[Aries RFC 0023: DID Exchange Protocol 1.0](https://github.com/hyperledger/aries-rfcs/tree/master/features/0023-did-exchange).” Because of the foundational nature of these two protocols (establishing a connection), the details we glossed over make them one of the most complex of the Aries protocols.
+
+### The Issue Credential Protocol
+
+To solidify the concepts, let’s take a quick look at another content protocol to show how an established messaging channel between agents is used. The **issue credential protocol** is used to enable an issuer to provide a holder with a verifiable credential. Again, we’ll gloss over some features of the protocol to keep it simple.
+
+In this protocol:
+
+- There are two participants (issuer, holder).
+- There are four message types (propose, offer, request and issue).
+- There are four states (proposed, offered, requested and issued).
+
+At the start, the two participants have agents and have established a connection. To issue an Indy credential, the simplest instance of the protocol must have three steps:
+
+- The issuer sends the holder an offer message.
+- The holder responds with a request message.
+- The issuer completes the exchange by sending the holder an issue message containing the verifiable credential.
+
+Since we want the protocol to support other verifiable credential implementations beyond Indy, that sequence is not set in stone. Some verifiable credential implementations don’t have a technical requirement for an offer, so the protocol could be completed in just two steps, a request from the holder and an issue from the issuer.
+
+The “propose” message is optional and can be used for two purposes. First, a holder can use a propose message to start the protocol, rather than waiting for an offer message from the issuer. As well, the propose message can be used as a way to negotiate with the issuer about an offer. If the issuer sends an offer for one type of credential, the holder can respond back with a propose message that says “Hey, thanks, but I would rather have this other type of credential.”
+
+And of course, things can go wrong. In executing any protocol, things may not follow the “happy path.” A “problem report” message can be used at any time to notify the other side of a problem in the execution of the protocol.
+
+### Lab Time
+
+Let’s take a look at the envelope and content protocols in action by stepping through this short "[Aries Connections and Messages](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS172x/aries-messages-lab.md)" lab. DIDComm-based development is a major topic of the developer-focused follow-on course to this one, "[Becoming a Hyperledger Aries Developer](https://training.linuxfoundation.org/training/becoming-a-hyperledger-aries-developer-lfs173/)" (LFS173x).
+
+### Aries Interop Profiles (AIPs)
+
+The Hyperledger [aries-rfcs](https://github.com/hyperledger/aries-rfcs) code repository contains a growing list of documents about how DIDComm protocols work (the concepts folder) and about specific Aries content protocols (the features folder). The repository is a bit overwhelming to those new to Aries. There are many, many protocols in various states of endorsement in the community, from proposed (someone’s great/crazy idea—who knows?), to demonstrated (someone implemented it), accepted (several groups have implemented it), adopted (everyone must use it) and even retired (that’s so yesterday). Where to start?
+
+![Aries RFC Lifecycle Updated](./images/LFS172x_CourseGraphics_Ch5_V2_Ch5-2.png)
+
+*Aries RFC Lifecycle*
+
+In the fall of 2019, the Aries community realized that the state of the Aries RFCs was more than just confusing. It was making it impossible for those implementing agents to know what other implementers were doing—what protocols were they using, even what version of what protocols they were using. The solution the community came up with was to define Aries Interop Profiles (AIPs—[Aries RFC 0302](https://github.com/hyperledger/aries-rfcs/tree/master/concepts/0302-aries-interop-profile)) that formalize ***exactly*** what protocols and what version of those protocols (down to the GitHub “commit” identifier!) a “compliant” agent would support. In doing that, the community created AIP v1.0, referencing 19 Aries RFCs that allowed agents to connect, message and exchange Indy credentials. With an AIP formally defined, many software creators in the community created [AIP v1.0](https://github.com/hyperledger/aries-rfcs/tree/master/concepts/0302-aries-interop-profile#aries-interop-profile-version-10)-”compatible” agents and a level of interoperability was enabled. The quotes around “compatible” are there because there was not really a good way to test that the agents were compatible with one another other than to manually try them.
+
+As this course is being updated (April 2021), AIP v2.0 is close to being finalized by the Aries community. While the goal of AIP v2.0 is much the same as AIP V1.0 (connecting, messaging and exchanging credentials), the ledger- and verifiable credential-agnostic nature of Aries is coming to the fore. Rather than being tied strictly to Indy, AIP v2.0 enables the use of other ledgers and other verifiable credential formats. It’s a significant move to making Aries interoperate with other verifiable credential ecosystems.
+
+The other significant interoperability progress being made by the Aries community is the Aries Agent Test Harness (AATH), a mechanism to automate interoperability testing across implementations. Rather than testing each agent against a conformance test, the AATH consists of tests that exercise the AIP protocols using an arbitrary combination of implementations. Wondering if agent X works with agent Y? Check the AATH! You can see the status of Aries agent interoperability at the website [https://aries-interop.info](https://aries-interop.info/), where recent test runs of the AATH are regularly published.
+
+### Building an Aries Agent Application
+
+To wrap up this chapter, let’s talk about how one goes about building an Aries agent application. How do you create something on top of all the Indy, Aries and Ursa goodness? As we talked about earlier in this chapter, that requires building an agent controller application that integrates with Aries functionality.
+
+The Aries functionality is built into an Aries framework. The framework contains everything needed to connect with other agents, send messages using the DIDComm protocol, execute Aries content protocols, interact with ledgers, issue verifiable credentials and create and verify presentations. However, by itself, it does nothing. The controller is what activates a framework and tells it what to do. As the framework does its work, it also calls back to the controller to say “Hey, this event occurred. What should I do?” That’s where the controllers business rules come into play and it can decide what to do.
+
+Let’s look at how that works and what a controller really does.
+
+![The Aries Agent Structure](./images/LFS172x_CourseGraphics_Ch5-8.png)
+
+*The Aries Agent Structure*
+
+### Aries Controller
+
+As noted, an Aries framework does nothing on its own. The controller must configure the Aries framework it is using and must initiate events and tell the framework how to respond to events. In providing this overview, we’ll use the case of an issuer agent that issues credentials to individuals and cover the important events in the life of an issuer agent, namely:
+
+- starting up
+- connecting with a holder
+- issuing a credential
+- revoking a credential (when necessary)
+
+### Aries Controller: Starting Up an Issuer Agent
+
+In starting up our agent, the controller must tell the framework to check the ledger for the objects necessary to be an issuer and to create them if necessary. As we’ve talked about, creating such things requires creating and managing public-private key pairs, calls to create the objects and calls to interact with the ledger to publish the objects. Those are all handled by the framework. The controller just needs to tell the framework the minimum details of what to create (and where), and the framework handles the rest. Going back to our “what goes on the ledger” from Chapter 4, the controller might tell the framework the ledger it wants to use, the name of the schema for the credential it will issue and the list of claims in the credential. From there, the framework uses its capabilities to create the Indy schema, credential definition and revocation registry objects, store them in the agent’s secure storage and publish them to the right Indy ledger. And once it has all that done, the framework notifies the controller and pauses, waiting for further instructions.
+
+![Starting Up An Issuer Agent](./images/LFS172x_CourseGraphics_Ch5-7.png)
+
+*Starting Up An Issuer Agent*
+
+### Aries Controller: Connecting With a Holder
+
+From time to time, the controller will want to establish a new connection. For example, the issuer might be a bank, providing clients a credential about their bank account. When the bank’s customer gets to a web page where they can collect their verifiable credential, the bank website might display a QR code for the customer to scan with their mobile wallet app. The bank’s controller calls to the framework to request the QR code data, displays it, and waits for the connection to happen. Remember all the things that happen in establishing a connection from earlier in this chapter? The framework handles all that. For the most part, the controller does nothing until it is notified by the framework “Hey, we’re all done! Here is the identifier for the new connection.” The controller does need to know the identifier for the connection and must save that in its own database, linked to the customer. Whenever it needs to interact with the customer’s agent, it tells the framework to do so using that connection identifier.
+
+Alternatively, an agent might receive a request to connect from another agent. Should it accept? That’s a question for the controller, so the framework passes to the controller the information about the request and then waits. Once the controller decides (which may take a while, if a person is needed), it tells the framework what to do—either to accept, reject or ignore the request. The framework will have a number of things to do regardless of the decision and does so without the controller having to know all the details.
+
+![Connecting With A Holder](./images/LFS172x_CourseGraphics_Ch5-3.png)
+
+*Connecting With A Holder*
+
+### Aries Controller: Issuing a Credential
+
+With a connection with the customer’s agent established the bank issuer can interact with that agent. It might ask for a presentation to confirm the identity of the customer. Eventually, it will get to the point of needing to issue a credential to the customer. To do that, the controller passes to the framework the type of the credential, the data for the claims and the connection identifier for the customer, and the framework (for the most part) takes care of issuing the credential. Note that after offering the credential to the customer, the response might not come back for hours. No worries, the issuer framework will just wait. Once the credential is issued, an identifier for the credential is given back to the controller, which again stores that with the rest of the information it keeps on the customer.
+
+![Issuing a Credential](./images/LFS172x_CourseGraphics_Ch5-5.png)
+
+*Issuing a Credential*
+
+### Aries Controller: Revoking a Credential
+
+Suppose some time later the customer decides to close the bank account for which they have been issued a credential. The bank doesn’t want the customer to be able to continue to prove they have the account. Once again, the framework to the rescue! The controller retrieves the identifier for the credential and passes it to the framework to revoke it. The framework handles the interactions necessary to revoke the credential. Once done, it lets the controller know—”All done!” Note that the interaction is only between the Issuer Agent and the ledger. There is a new capability in Aries that gives the Issuer a way to tell an impacted credential holder “Hey, we’ve revoked your credential!”, but that is optional—not needed for the revocation to take effect.
+
+![Revoking a Credential](./images/LFS172x_CourseGraphics_Ch5-6.png)
+
+*Revoking a Credential*
+
+### Aries Agent Frameworks
+
+As of April 2021, there are four major open source Aries frameworks, a fifth on the way and some closed source implementations. Let’s do a quick review.
+
+In the open source world, the frameworks are mostly identified by their language of implementation. The oldest are the Aries Cloud Agent Python ([ACA-Py aries-cloudagent-python](https://github.com/hyperledger/aries-cloudagent-python)) and Aries Framework .NET ([AF.NET aries-framework-dotnet](https://github.com/hyperledger/aries-framework-dotnet)). ACA-Py is a purely server-based agent, suitable for deployment as an enterprise issuer/verifier or an organizational wallet. ACA-Py has also been deployed on Raspberry Pi’s and so could also be used in IoT scenarios. AF.NET can be used both as a server-based agent and used with Microsoft’s Xamarin as the basis for a mobile wallet app. The better known (as of this writing) mobile wallets are all built on AF.NET. To now, both ACA-Py and AF.NET have been built around AIP v1.0, using Indy ledgers and Indy-format verifiable credentials. However, both are currently adding features to support AIP v2.0 including the use of other ledgers and other verifiable credential formats. Aries Framework JavaScript ([AFJ aries-framework-javascript](https://github.com/hyperledger/aries-framework-javascript)) is a relatively new framework that is being built primarily to support the mobile wallet use case, enabling the creation of JavaScript-based agents using technologies such as React Native and Flutter. AFJ is also AIP v1.0 right now, and moving quickly towards AIP v2.0.
+
+The Aries Framework Go ([AFGo aries-framework-go](https://github.com/hyperledger/aries-framework-go)) was created in quite a different way than ACA-Py and AF.NET. The core AFGo framework was built from the ground up in golang and does not use either Hyperledger Ursa or Hyperledger Indy, bypassing AIP 1.0 altogether. Instead, the AFGo team started with a framework that integrated with other ledgers, including one based on Hyperledger Fabric, and using (non-Indy) W3C Standard JSON-LD verifiable credentials. AFGo was also built using protocols that will be part of the upcoming AIP v2.0. Now that AIP v2.0 is pending across the Aries community, a current focus is to get all of the open source frameworks interoperable, including AFGo.
+
+> **NOTE:** *Some work has been done by contributors to AFGo to add support for both Indy ledgers and Indy-format verifiable credentials.*
+
+The last and most recent (as of latest editing of this course in April 2021) open source Aries framework is the Aries Verifiable Credential eXchange ([AVCX aries-vcx](https://github.com/hyperledger/aries-vcx)). For several years AVCX was built into the Indy SDK. However, as we noted in our earlier discussion about the evolution of Aries from Indy, the verifiable credential exchange part of Indy really belongs at the Aries agent layer (Layer 2 of the ToIP technical stack). So, a group in the Aries community has extracted the VCX components from the Indy SDK to make them the basis of a new framework. The AVCX is written in Rust and as such can be embedded in controllers built in any language. We’ll talk about that in the next section of this chapter when we talk about Aries deployment models. AVCX is used primarily for enterprise agents at this time.
+
+In addition to the open source implementations, there are companies offering closed source components that can be embedded in controllers. Most notable is Evernym, the company that originally created (with the Sovrin Foundation) the software that was to become Hyperledger Indy. Their Verity and Mobile SDKs can be embedded in controllers to build custom agents for any application. As well, Trinsic, the initial developer of Aries Framework .NET, offers closed source framework plus controller implementations of AF.NET for several use cases that can be run in the cloud (an “Agent as a Service” model) or on premise.
+
+### Aries Enterprise Deployment Models
+
+As Aries enterprise solutions become mainstream, they are becoming easier to deploy. Back in the early days when we started with Indy, you had to fork the Indy GitHub repos, get them running, and then design and build an agent yourself. We’ve come a long way since then!
+
+The easiest way for an organization to start using Aries as an issuer or verifier is to use an Aries agency, such as the ones offered by Trinsic, Evernym and others. In the “agency” model, the agents are made available in an “Agent-as-a-Service” model. A web user interface lets you sign up, deploy an agent and then use that agent using a web interface and/or the agent’s API. It’s an easy way to get started.
+
+If you want to run your own agents, each of the frameworks (open or closed source) provide guidance on deploying the framework to your own server (on premise or in the cloud). Once deployed, you can build your own controller to use the deployed framework. There are lots of example controllers associated with the frameworks providing higher level capabilities, such as “Issuer Kit” and “Verifier Kit” for quickly deploying issuers and verifiers. Recently, the Aries Cloud Agent Python has been enhanced to include a “multi-tenant” capability, making it easier to build your own agent-as-a-service implementation. For example, a government might want to deploy an internal service that provides agents for all of the potential issuers across the many organizations within that government. Those agents might have specific capabilities (for example, basic issuers) with a simple API, or have fully custom controllers tightly integrated with the organization’s line of business applications.
+
+For the most part, organizations can build controllers in any language they want, regardless of the language of the framework. For example, both Aries Cloud Agent Python and Aries Framework Go expose an HTTP API and use HTTP callbacks to the controller so that the controller can be built in any language.
+
+### Aries Mobile Agents
+
+Like enterprise agents, “in the old days” it was difficult to get a hold of an Aries mobile agent. Today, there are many commercial implementations that you can get from the Google and Apple app stores that use AIP v1.0 functionality and will work with AIP v1.0 organizational agents. That’s the easiest way to get started with a mobile wallet—download one from the app store.
+
+Early on, there was an open source mobile agent called Aries Mobile Agent Xamarin (Aries Max) that was built on Aries Framework.NET and Xamarin. However, Aries Max really didn’t take off, largely because for the casual mobile developer it was too hard to deploy. As we talked about earlier, a mobile agent can’t receive messages directly from other agents, it must have a routing agent, a mediator, to receive messages from other agents and hold them until the mobile agent requests them. Aries Max didn’t have an easy way to deploy a mediator. Developers wanting to work on a mobile agent gave up because it was going to be too much work to build a mediator first.
+
+Since then, an Aries protocol to define how to integrate with a mediator has been defined and that protocol has been added to some frameworks (notably ACA-Py) so it is much easier to deploy a mobile agent. In fact, Indicio.Tech even provides [a free mediator](https://indicio-tech.github.io/mediator/) that anyone can use for development. As such, new open source mobile wallets, such as [aries-mobile-agent-react-native](https://github.com/hyperledger/aries-mobile-agent-react-native) have been added with built-in “connect to a mediator” protocol, eliminating the major stumbling block in easily deploying an open source Aries wallet for development. As such, we are anticipating a much larger focus on building a crowd pleasing open source wallet. Of course, for production use, someone will still have to deploy them to the app stores.
+
+### Summary
+
+There is a lot to get to know about Aries agents, their components and how they work. This is the area in the three projects where most of the activity is currently happening. That includes within Aries, the definition of Aries protocols (through the RFC process) and on top of Aries, with organizations building solutions using Aries. It’s an exciting world of “building on the shoulders of others,” with major new capabilities regularly popping up in the market. While Indy and Ursa are cool, Aries is where development can and should have the most impact and we encourage anyone interested in making a difference in this environment to dig deeper into the Aries agent world.
+
+Want to learn more about Aries? If you are planning on building an Aries application, you’ll definitely be interested in the follow- on course to this one, "[Becoming a Hyperledger Aries Developer](https://training.linuxfoundation.org/training/becoming-a-hyperledger-aries-developer-lfs173/)" (LSF173x)!
+
+## Chapter 6: When Things Go Wrong
+
+### Introduction: Chapter Overview
 
 
 
 
 
-### So Many Agents!, Incomplete5 min5 minutes
-
-### Components of Agents, Incomplete6 min6 minutes
-
-### Agent Messaging, Incomplete8 min8 minutes
-
-### Building Agent Applications, Incomplete9 min9 minutes
-
-### Knowledge Check, Incomplete4 activities
-
-### Knowledge Check due 21 de jan. de 2022 16:19 BRT
-
-### Summary, Incomplete1 min1 minute
-
-## Chapter 6: When Things Go Wrong, Incomplete section
-
-### Introduction, Incomplete2 min2 minutes
 
 ### Recovering a Lost Mobile Agent Wallet, Incomplete15 min15 minutes
 
