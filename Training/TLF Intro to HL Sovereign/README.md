@@ -1495,22 +1495,206 @@ Want to learn more about Aries? If you are planning on building an Aries applica
 
 ### Introduction: Chapter Overview
 
+What happens if you lose your wallet? Well, we all know what happens in the paper credential world. You run around like a chicken with its head cut off, frantically searching for it, worrying that it may have fallen into the wrong hands. Will your identity be stolen? How long will it take you to get a replacement credit card? How do you even get a new driver’s license? Where is it!? Such a pain!
+
+That same scenario can also happen in the digital world we’re talking about. What happens if you drop your phone in a lake? What happens if you lose the device that holds your digital wallet with your credentials and private keys? Can others use them? How will you get your data back? Such a pain! You have probably heard stories of cryptocurrency keys being lost and [millions becoming completely inaccessible](https://www.cnn.com/2019/02/05/tech/quadriga-gerald-cotten-cryptocurrency/index.html). That’s way beyond a pain!
+
+This chapter explores these challenges that are a reality even in a self-sovereign identity, Indy, Aries and Ursa world. As you’ll see, the full set of approaches for agent storage backup and recovery are not yet fully defined, and there are few implementations. Lots of thought has gone into approaches, but not yet enough action. These are areas that are ripe for innovation and implementation.
+
+As we complete the second version of this course, one plus years after the first, updating it with all that has changed with Ursa, Indy and Aries in the last two years we find that...sadly, not too much has changed in the material in this chapter. We’ve seen some definite progress, especially by some of the leading commercial mobile wallet app providers, but it is still an area that is “ripe for innovation and implementation.”
+
+### Learning Objectives
+
+By the end of this chapter you should:
+
+- Understand how agents can be backed up and restored.
+- Be familiar with the the idea of a recovery key and how it might work.
+- Be able to recall techniques that are being considered for protecting your recovery key.
+- Be aware of the steps that you can take to protect your data if someone were to get a hold of your Aries agent.
+
+### Recovering a Lost Mobile Agent Wallet: Mobile Agent Wallet
+
+The first and most likely problem with having your own digital wallet is losing it. One minute your phone is working fine and the next, you drop it into the Grand Canyon and it is destroyed in a 1000m drop to the rock floor. Or, if you aren’t in Arizona, an even more likely (and much less dramatic) scenario is that the agent mobile app you are using has a bug, corrupts the data in your Aries agent key management service (KMS), you need to reset the app and all the data is lost. Now what?
+
+![Eek! Your Wallet Stops Working](./images/Eek__Your_Wallet_Stops_Working.png)
+
+*Eek! Your Wallet Stops Working*
+
+Even for day-to-day use, backup and recovery capabilities are crucial. For consumer mobile agents, these functions must be automatic, with little effort to set up, no effort to carry out on an ongoing basis, and minimal effort to restore. As well, the backups must be safe. It must be extremely (!!!!) difficult for an unauthorized user to access the data in an Aries app backup.
+
+For enterprise agents, the situation is a lot easier. Agent secure storage backup and restore should be straightforward in a modern enterprise Information Technology (IT) group since an agent’s database is more or less “just another database” from an enterprise perspective. In this section, we’ll assume a focus on the use case of restoring a mobile agent KMS, but the same principles apply in the non-mobile agent scenario.
+
+The backup and restore solution falls into two parts. First, the backups must be protected through encryption, redundantly stored and periodically tested. Second, the private key needed to decrypt the backups must be protected separately from the backups themselves. Only when an authorized person is deliberately restoring the backups should the two come together. We’ll look at some novel ways of managing the private key to keep it away from the backups until it is needed.
+
+If we can make sure that backup and recovery is going to be successful, the chance of permanently losing one’s wallet will be greatly diminished.
+
+As of April 2021, the Aries Framework .NET Xamarin based wallets from Trinsic, esatus and LISSI all have both a backup and restore process and an export mechanism. Further, the export format they use is compatible across all three mobile wallets such that a backup from one can be restored on another. It’s not a perfect solution, as you still have to manage a long pass phrase (discussed in the next section), but it’s the most promising progress we’ve seen yet!
+
+### Key Management Service (KMS) Keys
+
+In normal operations, there is one key that is used to access all of the data in the Aries KMS. Recall from Chapter 5 that (almost) all of the data in the KMS is encrypted and it is with what we will call the private KMS access key that the data can be decrypted. The KMS access key should always be protected by the best capabilities offered by the platform on which the agent is running. For example, on a smartphone, the KMS access key is protected by the phone’s hardware and accessible only using the security features of the operating system, such as face or fingerprint recognition or other security features (e.g., a pin or pattern). The single KMS access key is in turn used to decrypt a set of additional key pairs that encrypt/decrypt the data in the database. Those keys are only accessible inside the Aries KMS.
+
+We expect that the backing up of the KMS data store will be done using the tools provided by the manufacturer of the database tools. So, if an agent’s KMS is using an SQLite database, the backup of the database will be created by SQLite backup tools.
+
+In addition to backing up the database, the keys necessary to decrypt the data in the database must also be backed up and those must be protected. Those keys will be encrypted into a package protected by a second crucial key pair, the recovery key pair. It’s the recovery private key that must be separated from the backup itself until it is needed together with the encrypted backups to restore the database. We’ll talk about managing the recovery key in the next section. For now, we’ll just focus on managing the backups.
+
+So now we have two keys that can be used to access the data in the KMS. The one called the KMS access key is protected by the platform, ideally by hardware that prevents it from being accessed by anyone other than the owner.
+
+> **NOTE:** *There could be exceptions. For example, a court order/other extraordinary measure that forces access through a manufacturer’s "back door" if one exists. See, for example, this story from the Washington Post: "[Apple Vows to Resist FBI Demand to Crack iPhone Linked to San Bernardino Attacks.](https://www.washingtonpost.com/world/national-security/us-wants-apple-to-help-unlock-iphone-used-by-san-bernardino-shooter/2016/02/16/69b903ee-d4d9-11e5-9823-02b905009f99_story.html)"*
+
+The second, called the recovery key, has a public key that encrypts the package of key pairs and the database backups, and its corresponding private key that can decrypt the KMS keys and backups. The recovery “key” is often provided to the wallet owner as a long string of words that in turn are used to generate the public and private key pairs. The rationale is that the words are easier for the owner to manage versus a very long hexadecimal number. That said, if either get into the wrong hands, the protection provided by the encryption can be compromised.
+
+### Key Management Service (KMS) Keys: Backups vs Exports
+
+The current Indy secure storage mechanism supports creating an encrypted export of the agent’s KMS data. Although that mechanism could be used for backup and restore, we don’t expect that is how it will be used. That feature will be used for portability, when you want to move your data from one agent to another, even from one vendor to another. While it could be used for backup and restore, we expect that the database tools mentioned previously will be far more effective in managing backup data. For example, in the Trinisic wallet, there is both a cloud “backup and recovery” capability, used for ongoing backup of the wallet contents, and an “export” capability, to create a one time export of the database that can be imported into another wallet.
+
+### Managing Database Backups
+
+There are several places where a wallet backup could be stored:
+
+1. On the device itself.
+1. On the mediator agent.
+1. On another device.
+1. On peer-to-peer files.
+
+Let’s discuss each idea and how it might work.
+
+![Backup and Restore Ideas](./images/Backup_and_Restore_Ideas.png)
+
+*Backup and Restore Ideas*
+
+### Managing Database Backups: On the Device Itself
+
+The easiest is storing the encrypted backup on the device itself, so if only the agent storage were to be deleted, a restore could be carried out immediately, on the device. Periodically, the mobile agent would initiate an incremental backup of the KMS database. We’ll cover another reason for keeping a local backup in the next section.
+
+![On the Device Itself](./images/On_the_Device_Itself.png)
+
+*On the Device Itself*
+
+### Managing Database Backups: On the Mediator Agent
+
+Since all mobile agents must have an associated mediator routing agent (see the “Routing Agents” section of Chapter 5), another obvious place to store a mobile agent backup would be with its mediator agent. Periodically, the mobile agent would initiate a backup of the wallet, pushing the encrypted data to the mediator for storage. A potential risk with that solution is the operator of mediator service has access to all of your data, although in an encrypted form. If they are also the maker of your smartphone app, they could in theory access the recovery key. If that is a concern, a separate service that provides backup storage might be an option—perhaps banks or other trusted entities might offer such services.
+
+![On the Cloud Agent](./images/On_the_Cloud_Agent.png)
+
+*On the Cloud Agent*
+
+### Managing Database Backups: On Another Device
+
+Another backup location might be on other devices that either you control or are controlled by a person that you trust. When one device is lost, another can be used to restore it. Of course, if you don’t have access to another device, or the device is not available when you need it, that’s a problem. Another option would be to push the backup to hardware on a device you own, such as a non-mobile device in your home. However, if a disaster occurs such as a fire, and both devices are lost...
+
+![On the Another Device](./images/On_the_Another_Device.png)
+
+*On the Another Device*
+
+### Managing Database Backups: Using Peer-to-Peer Storage
+
+Yet another option is to combine all of the above background targets using peer-to-peer file sharing techniques. Parts of the backup could be redundantly distributed to different backup holders, and when needed, the components would be collected from the backups and then restored once together on the target device.
+
+![Using Peer-to-Peer Storage](./images/Using_Peer-to-Peer_Storage.png)
+
+*Using Peer-to-Peer Storage*
+
+### Managing Database Backups: Creating Backups
+
+Each of the non-local mechanisms could be managed by Aries content protocols such as we talked about in Chapter 5. Such protocols would include messages to initialize other agents as backup targets and periodically push backup data to the targets. Restoring a backup from other than the local device would take some additional effort as, with the original wallet lost, connections between the lost agent and the backup holder(s) would not be available. Some way of rebooting those connections and providing sufficient proof of who is asking for the backup would be needed before the holders would hand over the backup data they are holding.
+
+### Managing Database Backups: Testing Backups
+
+Recall that we mentioned other uses for keeping a local backup on the device. In addition to being available in scenarios where just the wallet is lost, the backup could be used to verify the restoration process. As anyone who has managed a backup and restore process knows, if you haven’t tested restoring your backup, you don’t know if you have a working process. The worst time to try your first restore is when you’ve lost the original and the backup is the only copy you have left! One solution is to test restoring using the recovery key with the local backup copy to ensure it can be used to produce a complete copy of your wallet. The local copy can also be used to periodically verify that the remote copies can be collected and assembled into a restorable local backup.
+
+### Managing the Recovery Key
+
+The second part of backing up and restoring an agent’s KMS database is managing the single recovery key that will be used to restore the backup. As discussed in the previous section, we have various ways of distributing and later retrieving backups, but to complete the restoration we need the recovery key. Further, we want to be sure that no unauthorized user can access the key and restore an instance of the wallet.
+
+![Recovery Key](./images/Recovery_Key.png)
+
+*Recovery Key*
+
+The recovery key must be protected by its owner. A recovery key might be a seemingly random string of letters and numbers, or might be a string of words from a given dictionary. It cannot be a traditional, simple password as it must have sufficient randomness (“entropy”) to be essentially impossible to determine through trying all combinations of characters (called a brute force attack). The key must be created by the owner and then put in a place or places such that it can be retrieved when necessary. As with many security-related challenges, storage will be a trade-off between convenience for the owner and difficulty for attackers. The more convenient to access the key for the owner, the more likely an attacker can also access it. Here’s a list of where the recovery key might be stored:
+
+- hot storage: on device
+- cold storage: on paper or USB key
+- sharded hot storage: social recovery
+- memorizing: in your head
+
+![The Recovery Key Must Be Protected!](./images/The_Recovery_Key_Must_Be_Protected_.png)
+
+*The Recovery Key Must Be Protected!*
+
+### Managing the Recovery Key: Hot Storage - On Device
+
+Hot storage refers to any form of online storage, and in this case, it’s on the device itself. As with the idea of keeping a backup on the device, the recovery key might reside on the device, protected by the same platform-level security that protects the access key, usually a hardware module accessed with a biometric—a fingerprint or face ID.
+
+The "on device" approach is not sufficient when we are protecting against the loss of the device itself. In theory, you could also save the recovery key in a password manager (for example, LastPass), in a file in the cloud, or on another device. However, the risk of loss in putting the key in those locations must be considered. Depending on how much value you place on your mobile agent, hot storage other than the device on which the agent operates may be risky as it makes it possible for a remote hacker (someone not physically present) to gain access to it.
+
+### Managing the Recovery Key: Cold Storage - On Paper, USB Key
+
+Cold storage is when the key is saved to a device that is not online. For example, the owner could write down the key, print it (perhaps as a QR code) or store the key on a USB key that is not left in a computer. Cold storage essentially eliminates the risk of an attacker getting your key remotely because it is not on the Internet. Of course, the definition of a safe place for a cold storage device is challenging for several reasons.
+
+Keeping it only at home risks losing the key in a fire. Storing the key in a clever hiding place that thieves would never figure out might turn out to be impossible for you to remember when you need it three years from now. Keeping a copy in a bank safe deposit box might be a good idea, but is also costly and a hassle. Keeping a copy at work and/or with a friend or family member might be a good idea, although the more copies floating around, the higher the risk of unauthorized use. Another option is keeping a sealed copy with a lawyer. That approach has the added benefit that the key could be retrieved by a designated proxy should you be unable to retrieve it.
+
+### Managing the Recovery Key: Sharded Hot Storage - Social Recovery
+
+A novel approach to the dilemma of wanting convenient, online storage of your key, without the risk of a remote attack is to “shard” the key into pieces and distribute those pieces amongst a set of holders. The sharding process (called “[Shamir’s Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing)”—a very cool algorithm!) is done such that a subset (for example, any three out of five) of the pieces can be combined to restore the entire key. You need a selection of holders, likely a mix of family members, friends and providers of a holder service. In the future, banks, law firms and cloud providers (such as Google or Amazon) might offer such a service. When you need the recovery key, you request the shards from enough holders through some authorization process where you prove (without your wallet, remember) that you should get the pieces. To prevent the shard holders from colluding to assemble the key without your permission, the holders should not be closely connected and you would not let the holders know who the other holders are.
+
+![Key Sharding and Social Recovery Updated](./images/LFS172x_CourseGraphics_Ch6_V2.png)
+
+*Key Sharding and Social Recovery*
+
+Interested in seeing an example of secret sharing in action? Here is [a lab](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS172x/SocialRecoveryLab.md) demonstrating [social recovery](https://www.youtube.com/watch?v=1c05mFuEQ5s) using [passguardian.com](http://passguardian.com/) service. The [passguardian.com](http://passguardian.com/) service provides functionality to let you encrypt a secret, create shards, and reconstruct the secret using an implementation of Shamir’s Secret Sharing.
+
+While social recovery sounds complicated, a DIDComm content protocol to support the capability would likely be relatively easy to define and implement. The trickiest part will no doubt be recovery, as by definition, social recovery must occur after the owner has lost their agent storage and all their connections. However, as a second or third line strategy, it’s rare that it would be used, and if it is ever needed, the hassle will be worth the pain of having nothing.
+
+### Managing the Recovery Key: Memorizing - In Your Head
+
+Memorizing a recovery key is a safe way to “store” the key for easy access when needed. Since keys must be sufficiently long and random to be effective, they are also extremely difficult to memorize—and to remember when you really, really need them. A clever approach that might work for memorizing a sufficiently complex key has been developed by [SeedQuest](https://github.com/WebOfTrustInfo/rwot9-prague/issues/90), a team in the US. They’ve built a video game that looks and feels like a classic Nintendo game but whose purpose is to help you to memorize and (when needed) recover your key.
+
+SeedQuest 3D works by first generating a sufficiently random key, and then guiding you through a game carrying out a series of 16 actions across four different scenes. Just doing that will produce a key with enough randomness (entropy) to make it impossible to determine using brute force techniques. Later, carrying out the same actions in the same order gives you the same key back. For a while, you keep the key in readily available cold storage and periodically practice, making sure you always get back your correct key. After you’ve practiced enough, your memory will (should?) retain the sequence (in theory, at least), and as long as you have access to the game, you can recreate your recovery key. If you have ever become an expert at a video game (Donkey Kong, anyone?), you will understand why this works and is such a clever approach. This can replace a locally stored cold storage key. You will likely also want an offsite copy or perhaps one accessible via social recovery, should you not be able to remember the sequence or become incapacitated.
+
+The downside? Learning the recovery sequence is more effort than the average person may want to apply to backing up their wallet. Unless of course the game is really fun.
+
+### No Backup, No Restore—What’s Next?
+
+What if either you have no backup, or all of the recovery techniques you try fail? Your wallet is completely gone. If that happens, you have no choice but to start over, just like you must do if you lose your physical wallet today. Your first stop will likely be to get a foundational credential, such as one provided by a government. You will likely start with paper documents (too bad you didn’t keep your recovery key in your documents!) and an in-person visit to a government service center. From there, you will have to go back and collect your other credentials in order of importance, using your foundational credential as a starting point.
+
+Remember we said that wallet backup and restore is crucial? We meant it. Early, small scale proof-of-concepts may be able to get away without reasonable (or any) backup and restore capabilities. However, as soon as there is value in the interactions and effort in restarting from scratch, backup and recovery is a necessity.
+
+### Losing a Device
+
+We’ve covered the case where you need to reinstate either your Aries agent application or your entire device because it is destroyed or you need to replace it. But what if you leave your working phone in a cab and off it goes? Or someone steals your phone. Can a person with your Aries agent pretend to be you? As with backups, the answer is in layers.
+
+![Someone Gains Access to Your Agent and Credentials](./images/Someone_Gains_Access_to_Your_Agent_and_Credentials.png)
+
+*Someone Gains Access to Your Agent and Credentials*
+
+Your primary layer of protection are the mechanisms built into your phone. Presumably, your Aries agent requires the use of the most sophisticated access controls on your phone—ideally biometrics (fingerprint, face ID) or at least requires the entry of a pin or pattern for accessing the phone. This (should) prevent anyone finding the phone from accessing the Aries agent on it. If supported, you may also be able to remotely wipe the phone, preventing further use.
+
+If the person (or organization) that has your phone ***is*** able to access your Aries agent despite the protections offered by the phone, there are not many options available today. This situation should be rare, because it is likely that anyone finding a phone would just reset the phone, deleting everything on it, including your Aries agent and KMS data.
+
+The next layer of protection is used in a proof-of-concept, but has not yet been deployed in any practical way. It involves using the same ZKP proof techniques as Indy uses for credential revocation, but this time with device revocation.
+
+- When you start to use a device such as a smartphone with an Aries agent, the device is registered in a **device authorization registry** on the Indy ledger you are using. Associated with that device authorization is a list of devices you can use for agent-y things—proving credentials and the like. Included would be a specific list of devices authorized to revoke the authorizations of other devices. The list of devices authorized to revoke other devices might even include the device of a friend or family member.
+- When you create a proof, you use the device authorization registry to prove the device you are using has not been revoked. The cryptographic technique used is similar to proving a verifiable credential you are using has not been revoked. When a verifier looks at the proof, they can check the ledger to verify the device’s proof of non-revocation.
+- What happens when one of your devices goes missing? The first thing you can do is revoke its authorization to generate proofs by using a device that is authorized to revoke the missing device. From that point on, the missing device cannot prove any credentials, eliminating the opportunity for someone to impersonate you online. A nice bonus? If you find the device is not missing after all (the cab driver returned it, or, you just left it at the office), you can reauthorize the device and keep using it for creating proofs.
+ 
+![Device Authorization Registry--A Layer of Protection Being Added to Indy](./images/Device_Authorization_Registry--A_Layer_of_Protection_Being_Added_to_Indy.png)
+
+*Device Authorization Registry—An Added Layer of Loss Protection*
+
+Another layer of protection that could be built on top of a device authorization registry is in the management of the pairwise DIDs your agent holds for every connection you have. Assuming you have revoked the authorization for the lost device, someone with that device can no longer create proofs using your credentials. However, they still can message contacts (at least the ones that don’t request proofs before acting). A feature of a future Aries agent will likely be the ability to cycle through all of the connection DIDs and update each DIDDoc. In this scenario, you restore a backup of your wallet to a new device, authorize it, and then update all the peer DIDs to remove the missing device from the DIDDocs, thus eliminating the ability of the device’s agent to message any of your contacts.
+
+If you are interested in a longer dissertation on what happens when you lose your device, the Sovrin Foundation has published an article "[What If I Lose My Phone](https://sovrin.org/wp-content/uploads/2019/03/What-if-someone-steals-my-phone-110319.pdf)" that covers this topic in greater depth. Remember though, beyond the protections built into the phone’s OS, the techniques outlined have not been created as of April 2021. Recall as well, way back at the beginning of this chapter, we mentioned that these mechanisms “are ripe for innovation and implementation.” Still true...
+
+### Summary
+
+It sucks when things go wrong but know it will happen. In the case of your digital identity wallet, the need for backup and restore capabilities are paramount. Losing your digital wallet and having to start from scratch is just as painful as with a physical wallet, so the backup and recovery techniques we covered in this section are vital. Further, the techniques for recovery must be easy for everyone to use. Making backups will be automated and easy, but balancing the ease of recovery with the security of the backups will be a challenge. We’ve described some techniques, but they may not be easy for all users. There are many ideas on this topic and we welcome innovation. And speaking of innovation, this leads nicely into the next and final chapter of the course—all about the possibilities that surround this technology. Carry on!
+
+## Chapter 7: Possibilities
+
+### Introduction: Chapter Overview
 
 
-
-
-
-### Recovering a Lost Mobile Agent Wallet, Incomplete15 min15 minutes
-
-### Knowledge Check, Incomplete5 activities
-
-### Knowledge Check due 27 de jan. de 2022 02:59 BRT
-
-### Summary, Incomplete1 min1 minute
-
-## Chapter 7: Possibilities, Incomplete section
-
-### Introduction, Incomplete1 min1 minute
 
 ### Endless Possibilities, Or At Least Nine Great Ones!, Incomplete22 min22 minutes
 
