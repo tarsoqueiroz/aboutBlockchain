@@ -1694,23 +1694,257 @@ It sucks when things go wrong but know it will happen. In the case of your digit
 
 ### Introduction: Chapter Overview
 
+Through the content and hands-on labs in the course, we hope you have gotten to see some of the potential for this technology—there are so many possibilities! Work is ongoing and ever-evolving as people from around the world use verifiable credentials to fix the Internet and address the privacy issues stemming from the missing trust layer. In this chapter, we will explore other possibilities and ways for you or your organization to get involved in this important and valuable work.
 
+### Learning Objectives
 
-### Endless Possibilities, Or At Least Nine Great Ones!, Incomplete22 min22 minutes
+By the end of this chapter you should:
 
-### Getting Involved, Incomplete1 min1 minute
+- Understand the main areas where the Indy, Aries and Ursa technology might be applied.
+- Be excited about the possibilities that exist for this technology to change the way the Internet currently operates.
+- Be raring to delve further into the Indy, Aries and Ursa projects.
+- Be sad that this course is coming to an end because it’s been fun, right?
 
-### Knowledge Check, Incomplete5 activities
+### Endless Possibilities, Or At Least Nine Great Ones: Areas of Possibility
 
-### Knowledge Check due 1 de fev. de 2022 13:39 BRT
+Here are many areas where this technology can play a key role, such as:
 
-### Summary, Incomplete1 min1 minute
+- authentication and authorization
+- in-person verification
+- proof of vaccinations
+- proof of training
+- consent receipts record permissions
+- organizational wallets
+- deciding whether to trust the issuer
+- delegation of authority with transparency and control
+- digital regulatory reporting
 
-### Course Feedback, Incomplete1 min1 minute
+Let’s discuss each area of possibility.
+
+### Authentication and Authorization
+
+We’ve raised this topic throughout the course, but let’s end by asking this question: “Why do we build identity systems?” Two reasons: authentication and authorization.
+
+In computer systems, authentication is the process of verifying the identity of an entity (person, other system, etc.) before allowing access. Who is it that is trying to access the system? Sometimes we need to know the unique person (name, address, etc.), other times, we don’t care who the person is, but we do care that when they come back, we connect them with the account previously created for them. Authorization in the computer system context is determining what an entity is allowed to do within the system—what data they can see, what changes they can make. As we described in Chapter 1, both are historically difficult to do, largely because information from the user cannot be trusted. Authorization and authentication have become enabled by identity providers (such as Facebook and Google) providing data about the user—giving them a central role in defining who is who. By building authentication and authorization on the foundation of verifiable credentials, the user is back at the center of the process, fully in control of with whom and how much data they share. The challenge is how to transition from the current identity provider world to one that uses verifiable credentials.
+
+One exciting solution that has been developed by New Zealand’s Mattr Global, in collaboration with the Government of British Columbia (BC) in Canada, implements an identity provider (vc-authn-oidc) that uses verifiable credentials. The solution uses the same OpenID Connect (OIDC) protocols used by Google and Facebook but bases its trust on verifiable credentials. That provides a path for every online service that currently supports “Login by Facebook” to add a “Login by Verifiable Credentials” mechanism. Next, we will discuss a great example of this in practice.
+
+### Authentication and Authorization: An Example
+
+The Ministry of Justice in BC needs to provide access to some of its online services to actively practicing lawyers in the province. How does the service know someone asking for access (authentication) is currently permitted to practice law in BC? A traditional approach to this problem might involve an integration between the government service and the legal entity that authorizes a lawyer to practice—The Law Society of BC. When a person requests access, the government service must find out (exactly!) who they are and then ask the Law Society “Is Alice currently a practicing lawyer?” It’s complicated.
+
+With verifiable credentials, the challenge becomes much easier. The Law Society tracks (as required by law), who are the practicing lawyers in BC. They have an online membership portal that is accessible only to lawyers. On that site, they provide a service where a practicing lawyer can request a verifiable credential that says “I am a practicing lawyer” (for example, not retired or currently suspended). On the BC government site, a user requesting access is challenged to provide a verifiable credential from the Law Society demonstrating they are a practicing lawyer in BC. If they are, they are granted access, based on the claims in the credential. If the lawyer retires or is suspended, the Law Society can revoke the credential, and access to the government system will be removed. And, since the BC Government already uses an OpenID Connect process to grant access, the vc-authn-oidc module built by Mattr Global fits right into the existing government IT infrastructure.
+
+Expand that model out. Other government systems grant access to practicing lawyers. Private companies offer online services to lawyers. And not just lawyers use such systems. Other credentialed individuals—doctors, accountants, real estate agents, trades people and so on, do as well. In Britain, the National Health Service worked with [Truu.id](https://www.truu.id/) ([What is Truu?](https://www.youtube.com/watch?v=jB6D0MkgJQw)) and its partners to implement a medical professional credentialing system that reduces to minutes a paper process that previously had taken a month to authorize a new doctor privileges to provide medical services. Suddenly, a raft of one-off solutions, each with multi-party integrations, can be solved with a single question and integration: does the party wanting access have the right verifiable credentials?
+
+### In-Person Verification
+
+Online trust frameworks are often rigid and scripted (e.g., authentication systems, AirBnB, Lyft). In the physical world, trust frameworks are often more flexible, relying on trustworthy (paper) credentials. When you go into the pharmacy to purchase medications, they might want to know you’re over 18. In the US, at least, it’s common to ask for a driver’s license for this purpose. Why?
+
+A driver’s license is an identity credential for use in a specific administrative domain: licensing drivers. Nevertheless, because of its implementation, it is used outside the administrative domain for which it was designed. A driver’s license is implemented as a decentralized, trustworthy credential that serves as a container for a specific set of attributes. Its veracity is (in theory) easily checked by recipients.
+
+![In-Person Verification](./images/In-Person_Verification.png)
+
+*In-Person Verification*
+
+Two important properties allow this kind of use:
+
+- The state is usually seen as a trustworthy party and people believe its attestations about the subject’s attributes.
+- Driver’s licenses are difficult enough to forge that we believe they have not been tampered with.
+
+Because of this implementation, people can be the conveyors of trustworthy attestations/claims about themselves. You can start a business today and decide you want to use a driver’s license for proof of address and start doing it immediately. No permission required. No integrations. No APIs. Your staff needs to be able to recognize fake licenses, including those from other parts of the country or places in the world.
+
+Using verifiable credentials isn’t that easy—you do need some technology. But you don’t need permission, and the integration is peer-to-peer with a person, and a global entity (the blockchain), not with a lot of individual services. With verifiable credentials, in-person verification becomes more trustworthy and safer, and you no longer have to worry about fake credentials. Take proving you are old enough to drink in a bar, for example. At a VC-enabled bar, you can present claims from a source the bar trusts (such as a driver’s license authority) that prove you’re over the necessary age and your picture (that proves you are you), and you are admitted. No need to show your physical driver’s license with its abundance of extra information—your address, driver’s license number and so on. Since patrons can come from anywhere in the world, the bar’s verifier agent needs to know the identity (the DID) of many driver’s license issuers (every state, province, country, etc.), but that’s all they need to know about them. Most importantly, they don’t need to integrate with each of those issuers for the process to work. That makes forging a verifiable credential essentially impossible.
+
+### Vaccination Credentials
+
+This brings us to the hottest verifiable credential topic of 2021—vaccination credentials. For decades, vaccination credentials have been paper, signed and issued at the time of inoculation. This raised some risks of forged credentials, but they were minor. For example, to travel, the need to have a “[Carte Jaune/Yellow Card](https://en.wikipedia.org/wiki/International_Certificate_of_Vaccination_or_Prophylaxis)” to be permitted into some countries aligned with the desire of the traveller—they didn’t want to go to places where a vaccination was needed without getting that vaccine. In recent years, a bigger risk occurred because of the “anti-vaxxer” movement: faked vaccination cards in schools as children were not allowed to attend schools without them. Some jurisdictions have been working (slowly) on systems to address this risk.
+
+![Carte Jaune/Yellow Card](./images/Screen_Shot_2021-04-19_at_12.37.52_PM.png)
+
+*Carte Jaune/Yellow Card*
+
+Then came COVID-19, COVID-19 vaccinations and the worldwide interest in being able to trust a person claiming to have been vaccinated. The backdrop is the same as both the Carte Jaune/Yellow Card and school scenarios above, but the risk of fraud is many, many times higher. COVID-19 vaccinations open up opportunities to participate in many more societal activities, not the least of which is travel. But getting a vaccination takes time and many are skeptical of vaccines. These factors significantly increase the likelihood of forged documents. As well, processing efficiency comes into play. If prior to an event (such as boarding a plane), everyone’s proof of vaccination must be verified, a paper process (especially during a pandemic) is less than ideal.
+
+These factors have brought talk of digital credentials into the mainstream. However, with the interest has come concern about the security and privacy of any such digital documents. Who knows when a digital proof is presented? What personal data about the subject is shared? Is a huge, central database of vaccinated people being created and used? What happens to people without access to technology? And the concerns are justified. Done badly, such systems can indeed be a security and privacy disaster. Done well, they can achieve the goals of their use—enabling commerce while containing the pandemic.
+
+### The Benefits of Vaccination Verifiable Credentials
+
+As many have discovered in looking for solutions to the digital proof of vaccination problem, verifiable credentials are a “right way” to solve the problem—for all the reasons that we’ve talked about in this course. In the following short paragraphs, we’ll highlight why verifiable credentials are the right solution to this problem and then we’ll look at the challenges in getting a global verifiable credential solution deployed. Note that in addition to “proof of vaccination”, verifiable credentials could also be used for “proof of a negative COVID-19 test” and other related facts.
+
+- **Privacy:** As we’ve talked about throughout the course, privacy and control by the subject (person) over their own data is core to verifiable credentials. Unlike a central vaccination database and queries back to the issuer, verifiable credentials allow the individual to hold their data and present it when necessary. Further, with selective disclosure, the amount of data shared can be minimized to the business case requirement. Ideally, just “yes, I’ve been vaccinated.” Further, if the verifiable credentials use a [ZKP-capable format](https://en.wikipedia.org/wiki/Zero-knowledge_proof), there is no unique identifier for the subject shared, preventing correlation amongst verifiers.
+- **Security:** While in many cases there will remain databases managed by issuers of who they have inoculated, there is no need for further centralization of the data and opening it up to verifiers. Only the ability to issue a credential to an identified subject is needed. This greatly reduces the risk of large data breaches of health information.
+- **Trust:** As we’ve talked about throughout the course, the use of verifiable credentials eliminates the ability of a person to forge their own credentials. The cryptography of the credentials prevents that. However, it leaves us with the challenge of how verifiers decide if they trust the issuers. We’ll talk about that in "The Challenges" section.
+- **Separation of Concerns:** In the race to come up with digital vaccination credentials, many shortcut solutions have been proposed that combine vaccination (health) information with other concerns, such as travel. Done properly, verifiable credentials issued by authorities with knowledge of the vaccination status of the subject (person) should only cover exactly that information. Issuers should not try to extend their authority beyond that into either the possible implication of a vaccination (e.g., “immunity”) or to what a vaccinated person can participate in (e.g., a “vaccine passport” for travel). There must be clear separation between proof of vaccination issued by an authority and the use of that proof in specific scenarios associated with the opening up of society.
+- **Paper Verifiable Credentials:** Paper-based verifiable credentials, as we’ve talked about earlier in the course, are an interesting option in preventing the “digital divide” between the technical haves and have nots. They prevent fraud by the person presenting the paper-based proof. However, as noted, paper-based verifiable credentials lack many of the privacy features of presentation request/presentation interactions between verifiers and holders.
+
+### The Challenges
+
+While those are the benefits of using a verifiable credential-based approach to proof of vaccinations, there are definitely some challenges in quickly ramping up a global solution.
+
+- **Trusting Issuers:** The challenge of verifiers deciding whether or not they trust the issuers grows the broader the use case. Each verifier needs to have access to some form of a list of who are the trusted issuers of credentials that they will accept. If they are only getting proofs from the local population, that list is limited. However, for international travel, that list must cover the world—regional health authorities provide lists to national organizations, who in turn provide those to international organizations, such as the World Health Organization (WHO) or global travel associations. Ideally, such a list is continually maintained and available for all to use. How a verifier determines the issuer is trusted is a key part of the governance framework challenge that comes with the use of any credentials—verifiable or not. We’ll talk more about this a little later in this chapter.
+- **Interoperability:** Many different approaches to trusted “proof of vaccination” digital documents are being proposed, many based on existing vendor-specific solutions. Even those using verifiable credentials are based on different technical stacks and verifiable credential formats, thus, getting all the solutions to interoperate is a challenge. Eventually, the “dominant design” will become obvious and all solutions will align with that approach, just as what happened with TCP/IP in the early days of the Internet. However, we have not yet reached that point with verifiable credentials and the need for proof of vaccination credentials is immediate. There will be bumps!
+- **Paper Identifiers:** As mentioned above and earlier in the course, paper-based verifiable credentials can eliminate the problem of forged credential documents. However, with the common use of paper-based verifiable credentials comes a higher privacy risk. Great care must be taken to ensure that the ongoing use of paper-based verifiable credentials do not result in a global unique identifier for every person on the planet, enabling tracking of all that we do.
+
+That’s all we’ll talk about specifically related to proof of vaccination credentials. It is a good and real example of why there is a need to transition from text-based paper to verifiable credentials. The vast majority of the material in this course is directly applicable to the “proof of vaccination” use case.
+
+### Real-Time Credentialing
+
+In most of the examples we’ve talked about to this point, the credentials are long-lived (professional credential, driver’s license, etc.) and it’s not difficult to imagine trusting those in paper form as a one-time check prior to giving a person long term authorization—for example, giving a lawyer a building pass to a courthouse by verifying their paper identity and lawyer credentials. If the lawyer loses the practicing lawyer authorization, the building pass will still work, but we accept that risk as “the best we can do.” But what about credentials that are short lived and that must regularly be renewed? How do we check those in the paper world?
+
+![Proof of Training](./images/Proof_of_Training.png)
+
+*Proof of Training*
+
+Often when a construction worker is given access to a site, they are required to have taken site-specific safety training consistent with the current state of construction. If you're in a building that is under construction, there needs to be constant updating of what is the best way to get out of the building in case of fire. That’s continuous safety instruction. Today, the certification of the training is paper, but it’s too much work to verify those credentials each time access is required. At most, only if there is a problem and an investigation is needed do the paper credentials get checked. With verifiable credentials, the process becomes proactive and near real-time.
+
+Access becomes based on the presentation of the necessary credentials from the authoritative source. The check is fast, happening with messages going back and forth between the issuer and verifier devices. Since the credentials are carried by the person (e.g., the lawyer, the construction worker in the examples above), they can be checked in real-time as access is needed, regardless of an Internet connection. The check is not based on a stand-in for the real credentials (not a building pass) but of the actual credentials issued by appropriate trusted authorities.
+
+The incentives for changing to this model are interesting. While perhaps there is little risk reduction in the lawyer use case, it does reduce the current “who has a building pass?” problem with which many companies struggle. In the safety case, the incentives are more powerful. At minimum, the construction company can be certain that only individuals with proper safety training are given access to the site. Further, there might be a financial incentive to the company in the form of reduced insurance costs, since they can now guarantee (with evidence) that only safety trained individuals can work on the site.
+
+### Consent Receipts
+
+On May 25, 2018, The General Data Protection Regulation (GDPR) was implemented. The GDPR is a regulation in EU law on data protection and privacy for all individual citizens of the European Union and the European Economic Area. It also addresses the transfer of personal data outside the EU and EEA areas.
+
+![GDPR: Digital Privacy and Protection for Citizens of the EU](./images/GDPR-_Digital_Privacy_and_Protection_for_Citizens_of_the_EU.png)
+
+*GDPR: Digital Privacy and Protection for Citizens of the EU*
+
+The biggest direct impact on users has been all of the notifications appearing on websites asking your consent for the service to track information about you for some purpose. When you click “OK,” have you ever wondered where the consent goes? Presumably, it gets saved by the company, and associated with your usage on the site—likely with a cookie of all things.
+
+What if instead of the company recording the event, the company gives you a receipt, just like the receipt you get when you buy something? If the receipt is a verifiable credential, you have indisputable proof of the agreement. What does that enable?
+
+- Each time you go to the site, the consent receipt can be requested and proven, likely through an automated process.
+- You can use your consent receipt to withdraw your consent, just as you use a store receipt to return merchandise.
+- At any time, you can see to what companies you have given your consent.
+- If a company has some sort of negative event (a data breach, a violation of GDPR, etc.), you can find out if you might be affected.
+- If you want to participate in a court action because a company violated the terms of the consent agreement, you have evidence of exactly the terms to which they agreed.
+
+The [Kantera Initiative](https://kantarainitiative.org/) is a global consortium improving trustworthy use of identity and personal data through innovation, standardization and good practice. Kantera hosts the [Consent & Information Sharing Work Group](https://kantarainitiative.org/groups/ciswg/), which created a [consent receipt specification](https://kantarainitiative.org/confluence/plugins/servlet/samlsso?redirectTo=%2Fpages%2Fviewpage.action%3FspaceKey%3Dinfosharing%26title%3DConsent%2BReceipt%2BSpecification). A number of Kantera members have products based on the specification, some of which are based on verifiable credentials.
+
+### Organizational Wallets
+
+In this possibilities section so far we’ve talked about wallets holding verifiable credentials for people. But people won’t be the only users of wallets and verifiable credentials. There is a need for organizations to have verifiable credentials about the organization and share those with verifiers in order to conduct business. For example, businesses have an authorization to operate, a business license, a set of bank accounts, insurance, auditor reports and so on. All of those can be represented as verifiable credentials issued to the organization, and presented by the organization’s wallet when needed. In this section, we’ll cover the basics of an organizational wallet, and then in the subsequent sections provide some possibilities around organizational wallets.
+
+An organizational wallet is like a mobile wallet that a person might use but runs on a server (somewhere—more on that later) and is controlled by “the organization” itself. All organizations are operated by people, so ultimately, people acquire, configure, deploy and use the organizational wallet. What does that mean?
+
+![An Organizational Wallet](./images/An_Organizational_Wallet.png)
+
+*An Organizational Wallet*
+
+Let’s start with the idea of an organizational wallet operating in the same way as a personal wallet. Requests come in to connect with another agent, offer a credential, request a proof and so on. All of the same things we’ve seen in the course. A simple organizational wallet could operate exactly as a personal wallet, doing the bidding of its users and receiving requests from other agents and asking its users how to respond. To other agents, the wallet appears to be the same as any other, and on the organizational side, an internal website (the controller part of the agent) would notify users of the requests and wait on instructions. Likely, the controller component would be extended with a rules engine that allows the wallet to handle certain requests automatically (e.g., always answer requests from certain agents, always ignore requests from certain other agents and so on), and to route certain requests to specific individuals (e.g., always send banking information requests to accounting).
+
+While in first creating the wallet, a certain user might be given access, it’s likely verifiable credentials would be issued to all of the rest of those granted access to use the wallet. Users would present (from their mobile wallet) a proof to get access to the wallet.
+
+Since the wallet could not scan a QR code, establishing connections to issuers and verifiers would be a little different, likely facilitated by the organization’s wallet users. A user interacting with another organization (for example, a bank), might connect (using their mobile wallet) to the bank's agent, and then “‘introduce” the bank’s agent to the organizational wallet. Once the two enterprise agents connect, all the same flows (request presentation, issue credential, etc.) could occur.
+
+### Deciding to Trust the Issuer (1)
+
+With an organizational wallet in place, let's come back to an issue we’ve raised multiple times in the course. Once a verifier checks out the cryptography of a credential, they know they can trust the data. However, they still have to decide if they can trust the issuer. For many use cases, the verifier can constrain the problem by only requesting presentations involving credentials from trusted issuers, issuers they “know” by their DIDs and the credentials they issue. But what about when the universe of potential issuers is too large, such as global issuers of “proof of vaccination” credentials? Let’s look at how organizational wallets might be able to help with that.
+
+Suppose you are a verifier and you are presented with a verified proof containing data from a credential issued by an issuer you have not previously encountered. What do you do? For a person facing that problem, the answer is pretty easy—you would “Google it”—search for the issuer, learn about them and then make a decision. With organizational wallets, it can be a lot more automated, although it still might come down to a person making a decision.
+
+Here’s a possible approach: The verifier uses the DID of the issuer to find its public key and endpoint, and sends a presentation request asking (more or less) “what authority do you have to issue credentials of this type?” Ideally, that is a standard request, answered with a presentation about their authority to issue the credential. The verifier now has data from another credential from another issuer. If that other issuer is recognized, we’re done! If not, repeat the process with the next issuer. Recall that this process will happen with machine-to-machine efficiency, so it won’t take as long as it sounds. Ultimately, a trusted issuer will be found (all good!), an untrusted issuer will be found (reject!), or if neither, the verifier agent might provide all the collected data to a person to make a decision (remember that concept of “human trust?”). Once decisions are made about the (previously unknown) issuers, update the list of trusted and not trusted issuers, so next time, the decision can be handled automatically.
+
+In practical terms, here is how this might be used in the “proof of vaccination” use case:
+
+- The World Health Organization (WHO) Aries agent gives the Aries agents of member states a verifiable credential to indicate they are authorized to delegate the issuing “proof of vaccination” credentials.
+- The member states issue verifiable credentials to their regional authorities to indicate they are authorized to delegate the issuing “proof of vaccination” credentials.
+- The regional authorities issue verifiable credentials to authorized organizations that issue the actual “proof of vaccination” credentials.
+
+### Deciding to Trust the Issuer (2)
+
+Using the approach we just discussed, the verifier has at most three layers to climb to find (or not) a trusted issuer (worst case—they know the DID for the WHO issuer).
+
+![Proof of Vaccination Use Case Updated](./images/Proof_of_Vaccination_Use_Case_Updated.png)
+
+*Proof of Vaccination Use Case*
+
+There can be optimizations in that process.
+
+- Each “delegation of authority” presentation might be embedded in the credential issued to each delegate, so the entire chain of delegation is included in the “I am authorized” presentation from the initial issuer.
+- An organization (such as the WHO) might coordinate with their member states to maintain a central list of trusted “proof of vaccination” issuers. With that in place, the verifier need only ask the WHO organizational agent if the initial, unknown issuer is on the trusted list.
+- The WHO agent could coordinate with their member states such that the WHO agent issued (and revoked when needed) a “delegated authority” credential to every actual issuer of a “proof of vaccination” credential, shrinking the layers of authorization.
+
+### Delegation of Authority with Transparency and Control
+
+Delegation of authority as a use case is everywhere. Most of us are familiar with delegations in a personal context—a power of attorney that gives a trusted family member or friend the right to act on our behalf when we are unable to do so. Delegation of authority is everywhere in a business context as well. Any business is ultimately owned by someone or some group. Every employee is given some form of delegation of authority that derives from the ownership of the business. The board of directors delegates authority to the CEO, the CEO delegates authority to the executive team, and so on. Delegation goes outside the business as well, such as lawyers and accountants that act on behalf of the business in specific business dealings.
+
+Delegation of authority is a prime use case for verifiable credentials. An issuer, the entity with authority, issues a verifiable credential to the holder, who is being given the authority. When necessary, the holder proves the authority to a verifier. When the authority is to be withdrawn, the issuer revokes the authority, thereby preventing the holder from using it in the future. That’s exactly the same as the verifiable credential model.
+
+![Delegation of Authority Model Versus Verifiable Credentials Model](./images/LFS172x_CourseGraphics_Ch7-1.png)
+
+*Delegation of Authority Model Versus Verifiable Credentials Model*
+
+### Delegation of Authority Example: Lawyers and Staff
+
+An example of the use of delegation through verifiable credentials is an extension of the lawyer authentication use case from earlier in this chapter. Recall in that example that the authority for identifying lawyers in a jurisdiction (for example, the Law Society of British Columbia), issues a practicing certificate to a lawyer, and the lawyer can use that to authenticate at a government online service. That works in theory, but in a law practice, that’s not always sufficient. Using an online service is often done not by the lawyer directly, but by members of the lawyer’s team—delegates. Often the lawyer uses his or her credentials to access an online service, but has the work on that service done by a staff member. While this is necessary from a productivity perspective, it’s often against the service’s terms of use, and possibly a violation of the lawyer’s legal responsibilities.
+
+A more effective and transparent approach is to allow the lawyer to delegate their authority to a staff member so the staff member can use their own credentials for authentication. Being considered in the BC use case is that the lawyer can request the Law Society issue a credential to their staff member(s). The responsibility for the behavior of the staff member in using the credential is with the lawyer, and all of the parties are aware of who is doing what on the system. Revocation of a staff member’s delegation can happen as needed, and the revocation of the lawyer’s credential triggers the revocation of all of the lawyer’s delegations.
+
+![BC Provincial Government Use Case](./images/LFS172x_CourseGraphics_Ch7-2.png)
+
+*BC Provincial Government Use Case*
+
+Such a delegation approach can be implemented in many use cases with the verifiable credentials currently available in Indy. The delegating party asks the authority to issue a delegation verifiable credential to a delegate. The delegate can use that credential for authentication and authorization.
+
+### Organizational Wallets and Delegation
+
+Another model for delegation is where an organization can manage the delegation internally, through its own organizational wallet. As noted in the discussion above about delegated credentials for the legal staff, the delegation credential is coming from the Law Society. Another way to do delegation is for an issuing authority to give a credential to the organization, and the organization to issue delegation credentials to their staff. The benefit of this approach is that the issuing authority does not have to do any tracking of who has credentials. Instead, that is handled entirely by the organization delegating the authority.
+
+Let’s look at an example. The Law Society might issue credentials for a law firm’s lawyers to the firm’s organizational wallet. In turn, the firm’s organizational wallet would issue credentials to their staff. On accessing a government site, the staff member would present the credential given to them by the firm, and the name of the lawyer for which they are working. The government site would connect with and request from the organizational wallet the Law Society issued credential for that lawyer. If everything checks out, access is granted. As staff turnover occurs, the management of the delegation credentials is handled entirely within the firm.
+
+Note that this does make the coordination a little more complex. No longer is the interaction strictly between the verifier and the holder. Further, the meaning of the delegation credential needs to be understood by the verifier. This once again brings up the need for a governance framework—a set of rules under which the parties are operating within an ecosystem. Yes, it’s really important!
+
+### Digital Regulatory Reporting
+
+Regulatory reporting is a field ripe for innovation using verifiable credentials. There is an ongoing battle between pro-regulation and pro-business proponents about the value of regulation.
+
+A pro-regulation view is that regulation is necessary to keep “bad actors” from reducing their costs by not paying for all the impacts of their products, and leaving it to society to foot the bill. The manufacturers of the 50’s and 60’s (and beyond) that quietly pumped pollution from their factories into nearby rivers and streams are prime examples of the long term costs of not regulating business activities.
+
+A pro-business view is that regulation means endless paperwork and reporting that is costly to generate and rarely reviewed and monitored because it’s too expensive for the government to act upon. Good actors adhere to the regulations and reporting despite the costs, while bad actors continue to ignore regulation compliance to limit their costs with little chance of being caught.
+
+![Digital Regulatory Reporting](./images/Digital_Regulatory_Reporting.png)
+
+*Digital Regulatory Reporting*
+
+What if authentic regulatory reporting data could be generated from its source, digitally shared and digitally processed for compliance? The cost of regulatory paperwork would drop and the effectiveness of the regulations would increase. Good actors would be able to prove, at a low cost, their compliance with regulations, and bad actors would be forced to either comply or shut down. That is all possible based on verifiable credentials.
+
+Consider the energy industry, a contributor of carbon emissions that drive climate change. As the world transitions to other energy sources, incentives will grow for those reducing their carbon footprint, and costs will rise for those failing to do so. Even if governments fail to act, society will (eventually) punish those that knowingly profit from business practices that damage society, as happened with the tobacco and opioid industries. But for companies to demonstrate that they are reducing their carbon footprint, they must present trusted evidence. As the Oxford Institute for Energy Studies (an independent energy markets think tank) [recently reported](https://www.oxfordenergy.org/publications/challenges-to-the-future-of-lng-decarbonisation-affordability-and-profitability/?v=3e8d115eb4b3), “*The LNG community needs to replace an ‘advocacy’ message – based on the generality of emissions from combustion of natural gas being lower than from other fossil fuels – with certified data on carbon and methane emissions from specific elements of the value chain for individual projects.*” That sure sounds like a need for verifiable credentials! By collecting authentic data from authorized devices (verifiable credential issuers) at the source—the well head—and continuing through the production chain, energy producers can demonstrate their carbon impact. As production improvements are made, as moves are made to lower impact fossil fuels, and off fossil fuels entirely, the impact of the changes can be quantified and rewarded or penalized as appropriate.
+
+Organizational wallets play a huge role here. Each organization within a supply chain has an organizational wallet that holds information about the organization and more. On top of the credentials we listed earlier, they might have audited reports about their sustainability and labor practices (good and bad), GHG data from certified devices, and so on. Further, as they receive products from their suppliers, they would receive verifiable credentials about those products. As the organization creates and sells its own products, they provide to their customers verifiable credentials about those products, including materials from suppliers that went into the product. End customers, investors, regulators and perhaps even consumers can then use the verifiable credentials to automatically follow the supply chain information to determine the sources of materials in products, and trusted information about the companies involved. Investors interested in making environmentally sound investments, regulators looking to stop damaging practices and end customers wanting to make good decisions for the planet would have trusted information with which to make sound decisions.
+
+Let’s finish with that thought, using verifiable credentials to incentivize companies to fight climate change. That’s powerful!
+
+### Getting Involved: How to Get Started
+
+The Hyperledger projects are open source, where ideas and code can be publicly discussed, created and reviewed. There are many ways to contribute to the Hyperledger Indy, Aries and Ursa community. To get started in any one of the projects, start at the Hyperledger Wiki for the project:
+
+- `https://wiki.hyperledger.org/display/indy`
+- `https://wiki.hyperledger.org/display/aries`
+- `https://wiki.hyperledger.org/display/ursa`
+
+Upon visiting these pages, you will notice that there are links to all kinds of valuable information including links to documents, data and details about the projects, repositories, project management information, rocketchat discussions, collaboration tools, community meetings and more.
+
+If you are wanting to build on these technologies, focus in particular on Aries. With Aries, you can start building applications that depend on the technologies covered in this course. If you are a developer, you’ll want to start with the follow-on to this course: "[*Becoming a Hyperledger Aries Developer*](https://training.linuxfoundation.org/training/becoming-a-hyperledger-aries-developer-lfs173/)" (LFS173x).
+
+![Bring Us Your Ideas](./images/Bring_Us_Your_Ideas.png)
+
+*Bring Us Your Ideas*
+
+### Summary
+
+That’s a wrap! Thank you for exploring Indy, Aries and Ursa with us. If you’re a developer, or a developer-wanna-be who is not afraid of a command line, come see us in the follow-on to this course, "[*Becoming a Hyperledger Aries Developer*](https://training.linuxfoundation.org/training/becoming-a-hyperledger-aries-developer-lfs173/)" (LFS173x).
 
 ## Final Exam
 
 ### Before You Begin Your Final Exam
+
+Congratulations! You have completed this course. You can now click on the I'm ready, bring on the Final Exam button below to start the final exam. 
+
+***To pass, you must score a final grade of 70% or above on this course. Your final grade is a combination of the knowledge check questions (20%) at the end of each chapter, and the final exam (80%).***
+
+You will have a maximum of 2 attempts to answer each question on the exam (other than true/false answers, in which case, you have only 1 attempt). It is an open book exam (meaning that you are free to reference your notes, screens from the course, etc.), and there is no time limit on how long you can spend on a question. You can always skip a question and come back to it later. 
 
 ### Congratulations!
 
