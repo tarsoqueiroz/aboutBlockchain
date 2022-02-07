@@ -291,15 +291,97 @@ This chapter has largely been a review of the concepts introduced in the previou
 
 ### Introduction
 
+As you learned in the prerequisite course (["Introduction to Hyperledger Sovereign Identity Blockchain Solutions: Indy, Aries and Ursa" (LFS172x)](https://www.edx.org/course/identity-in-hyperledger-aries-indy-and-ursa))—which you took, right?—Hyperledger Aries provides a shared, reusable, interoperable tool kit designed for initiatives and solutions focused on creating, transmitting and storing verifiable digital credentials. It provides the infrastructure for distributed ledger-rooted, peer-to-peer interactions as the basis for applications using verifiable credentials. Aries agents are software components that act on behalf of entities—people, organizations and things. Aries agents enable decentralized, self-sovereign identity based on a secure, peer-to-peer communications channel.
 
+![Hyperledger Aries logo](./images/Hyperledger_Aries_logo.png)
+
+*Hyperledger Aries logo*
+
+In this chapter, we’ll try to convert all the buzzwords in the previous paragraph into practical knowledge about Aries that you can use to develop your own applications. We’ll look at the architecture of an Aries agent through some hands-on labs. Specifically, we look at what parts of an agent come from Aries, and what parts you, an Aries developer-to-be, are going to have to build. We will also look at the interfaces that exist to allow Aries agents to talk to one another and to distributed ledgers such as instances of Hyperledger Indy.
+
+### Learning Objectives
+
+By the end of this chapter you should:
+
+- Be familiar with the Aries ecosystem consisting of wallet agents for people and organizations, server-based agents for enterprises and agents for IoT devices.
+- Know the concepts behind issuing, holding/proving and verifying agents.
+- Understand the internal components of an Aries agent.
+- Know what Aries interoperability means and how it is achieved.
 
 ### Examples of Aries Agents
 
+Let’s first look at a couple of examples to remind us what Aries agents can do. We’ll also use this as a chance to introduce some characters that the Aries community has adopted for many Aries proof-of-concept implementations. You first met these characters in the LFS172x course.
 
+![LFS173X_CourseGraphics-06.png](./images/LFS173X_CourseGraphics-06.png)
+
+*Alice's Agent*
+
+Alice is a person who has a mobile wallet that uses Aries protocols running on her smartphone. She uses it to receive credentials from various entities, and uses those credentials to prove things about herself online.
+Alice’s smartphone wallet application connects with a specialized Aries agent that does nothing except routes messages to her. It too is Alice’s agent (called a **mediator agent**, as we’ll see), but it’s one that is (most likely) run by a vendor. We’ll learn more about these cloud services when we get to the Aries mobile agents chapter.
+Alice is a graduate of Faber College (of Animal House fame), where the school slogan is "Knowledge is Good." (We think the slogan should really be "Zero Knowledge is Good.") Faber College has an Aries agent that issues verifiable credentials to the college’s students. It issues student ID cards as verifiable credentials to students, and digital diplomas to graduates.
+ 
+![Faber_College.png](./images/Faber_College.png)
+
+*Faber College*
+
+- Faber has agents that verify presentations of claims from students when their student ID is needed around campus—joining classes, writing exams, getting food at campus eateries and so on.
+- Businesses in and around Faber College have agents that verify presentations of claims from students and staff at the college to allow them to easily offer discounts to students. For example, Alice proves the claims from her "Faber College Student ID" credential to get a discount every Tuesday night when she goes to (and wins) Trivia Night at a nearby pub.
+- Faber also has an Aries agent that receives, holds and proves claims from credentials about the college itself. For example, Faber’s agent might hold a credential that it is authorized to grant degrees to its graduates from the jurisdiction (perhaps the US state) in which it is registered.
+- ACME is a company for whom Alice wants to work. As part of their application process, ACME’s Aries agent requests proof of Alice’s educational qualifications. Alice’s Aries agent can provide proof using the credential issued by Faber to Alice.
+- Since Alice is the first Faber College student to ever apply to ACME, ACME doesn’t know if they can trust Faber. An ACME agent might connect to Faber’s agent (using the DID in the verifiable credential that Alice presented) to get a proof from Faber that it is a credentialed academic institution.
+
+### Lab: Issuing, Holding, Proving and Verifying
+
+In this first lab, we’ll walk through the interactions of three Aries agents:
+
+- A mobile agent to hold a credential and prove claims from that credential.
+- An issuing agent.
+- A verifying agent.
+
+The instructions for running the lab can be found on [GitHub](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS173xV2/IssuingHoldingProving.md).
 
 ### An Aries Ecosystem
 
+All of the examples of Aries agents in the previous section can be built and operated independently by different organizations because of the common protocols upon which Aries agents communicate, as pictured below.
 
+- Some of the Aries agents are run by large enterprises (such as Faber College) that have a publicly accessible endpoint to which other agents can initiate connections.
+- Other agents are owned by small businesses (such as the pub where Alice goes for Trivia Night) that might not be sufficiently IT-savvy to run their own agents. They might use an Agency-as-a-Service offered by a vendor that allows them to easily configure their agent to, for example, verify certain types of credentials.
+- Mobile wallet applications, such as the one you used in the first lab, run on smartphones.
+- Since mobile applications cannot have their own physical endpoint, it is not possible for an enterprise agent (such as Faber’s agent) to send a message directly to a mobile wallet. Rather, each mobile wallet must have routing agents that give other agents a physical endpoint to which they can send messages destined for the wallet. We’ll cover this in detail in the course chapter on mobile wallets and routing.
+
+An Aries ecosystem consists of both the Aries agents that message one another to exchange verifiable credentials and an understanding of the verifiable credential types that are being issued, held, proven and verified. The off-campus store that is providing discounts to students because they have a student ID verifiable credential must know that Faber College is issuing the credential and the meaning of the various data elements ("claims") in the credential. To put that into Trust over IP (ToIP) terms, all the participants have to know both the technical and governance elements of the ecosystem—the ToIP Dual Stack.
+
+The agents in an Aries ecosystem share many attributes:
+
+- They all have secure storage for keys.
+- They all have some secure storage for other data related to their role as an agent.
+- Each interacts with other agents using secure, peer-to-peer messaging protocols.
+- Most connect with ledger(s) to write (issuers) and read (holders, provers and verifiers) decentralized identifiers (DIDs) and verifiable credential metadata.
+- Most process (issue, hold, prove and verify) verifiable credentials (although routing agents may not).
+- They all have an associated mechanism to provide "business rules" to control the behavior of the agent:
+  - Often a person (via a user interface) for phone, tablet, laptop, etc.-based wallet agents.
+  - Often a backend enterprise system for enterprise agents. The backend system may have request handling workflows that include people.
+  - For routing agents the "rules" are usually limited to the forwarding of messages to other agents. Such routing agents are usually fully automated.
+
+While there can be many agent variations, the most common ones are:
+
+Agents for people.
+Agents for organizations.
+Agents for routing messages to and from agents for people and organizations.
+ 
+![LFS173X_CourseGraphics-18.png](./images/LFS173X_CourseGraphics-18.png)
+
+*Phone, car, cloud, screen, home*
+
+A significant emerging use case that we’ve not covered in this section are agents embedded within or associated with IoT devices. In the common IoT case, IoT device agents are just variants of other agents, connected to the rest of the ecosystem through a server-based agent. All the same principles apply. For example, IoT devices might include a sensor to measure something (such as greenhouse gas emissions at a factory) and emitting the data by issuing verifiable credentials, ensuring that the data cannot be tampered with after generation. This provides a foundation of trust about the captured data—if the device itself can be trusted. Such trust might be accomplished by third-party auditors or government regulators certifying the operation of the device, and hence the validity of the issued verifiable credentials.
+
+### Ledgers and Verifiable Credential Formats in an Aries Ecosystem
+
+The vast majority of Aries agents connect with a distributed ledger (and sometimes several) to read and write the data necessary to share verifiable credentials and presentations. In the diagram below, the issuer, holder and verifier use the **verifiable data registry** (as defined in the W3C Verifiable Credential standard), which is often implemented as a distributed ledger as the basis for issuing and presenting verifiable data. Early Aries agents used both Hyperledger Indy ledgers (such as the Sovrin MainNet) and the Indy verifiable credential format, called Anonymous Credentials (AnonCreds). As of the updating of this course (mid 2021), a significant shift has begun to building Aries agents that can use other types of verifiable credentials, specifically those based on the W3C Verifiable Credential standard, as well as use data from other ledgers. Interestingly, the architecture and operation of an Aries agent is the same regardless of the verifiable credential format or the ledger used. As such, in this course, we will mostly use the more mature Aries+Indy combination in the labs as we establish the foundational concepts. However, we’ll also highlight the differences in using other verifiable credential formats and point out where other ledgers can be used. There is also a lab or two where you can get hands-on with some non-Indy-based use cases.
+
+![The Verifiable Credential Trust Triangle](./images/LFS173X_CourseGraphics-29.png)
+
+*The Verifiable Credential Trust Triangle*
 
 ### Aries Agent Architecture
 
