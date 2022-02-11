@@ -246,7 +246,7 @@ A second (super cool) use of a ZKP in verifiable presentations is a "predicate Z
 
 A key capability of some verifiable credential formats is support for **selective disclosure**, meaning it is possible to prove a subset of the claims issued in a verifiable credential. With selective disclosure support, an issuer can put all of the claims that might be needed for a range of use cases, and the holder/prover and the verifier can limit the information shared for a specific presentation. In the example pictured below, a holder with a “driver’s license” type verifiable credential can share just their picture and that they are old enough to drink (using a ZKP predicate) to a bartender at a pub. The rest (name, address, driver’s license number, etc.) can be held back—it’s not needed by the pub. Selective disclosure is an important privacy capability with verifiable credentials!
 
-![An Example of Selective Disclosure—Person is verified as  “old enough” to enter the bar but no other data is revealed](./images/)An_Example_of_Selective_Disclosure_Person_is_verified_as___old_enough__to_enter_the_bar_but_no_other_data_is_revealed.png
+![An Example of Selective Disclosure—Person is verified as  “old enough” to enter the bar but no other data is revealed](./images/An_Example_of_Selective_Disclosure_Person_is_verified_as___old_enough__to_enter_the_bar_but_no_other_data_is_revealed.png)
 
 *An Example of Selective Disclosure: Person is verified as "old enough" to enter the bar but no other data is revealed*
 
