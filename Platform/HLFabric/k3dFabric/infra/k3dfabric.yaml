@@ -1,0 +1,76 @@
+apiVersion: k3d.io/v1alpha3
+kind: Simple
+
+name: k3dfabric
+servers: 3
+agents: 3
+image: rancher/k3s:v1.22.2-k3s2
+
+kubeAPI:
+  hostIP: "10.15.18.44" # "192.168.100.101"
+  hostPort: "6443" # Kubernetes API via localhost:6443
+
+ports:
+  - port: 80:80 # Frontend frontend:80
+    nodeFilters:
+      - loadbalancer
+  - port: 443:443 # ...
+    nodeFilters:
+      - loadbalancer
+  - port: 8080:8080 # Explorer explorer:8080
+    nodeFilters:
+      - loadbalancer
+  - port: 8443:443 # ...
+    nodeFilters:
+      - loadbalancer
+  - port: 3000:3000 # Grafana grafana:3000
+    nodeFilters:
+      - loadbalancer
+  - port: 4000:4000 # API svc to api:4000
+    nodeFilters:
+      - loadbalancer
+  - port: 5984:5984 # CouchDB ...:5984 - sample and direct access
+    nodeFilters:
+      - loadbalancer
+
+volumes:
+  - volume: $PWD/workspace:/mnt/nfs_share/
+    nodeFilters:
+      - all
+
+options:
+
+  k3d:
+    wait: true
+    timeout: "360s"
+    disableLoadbalancer: false
+    disableImageVolume: false
+
+  k3s: # options passed on to K3s itself
+    extraArgs: # additional arguments passed to the `k3s server|agent` command; same as `--k3s-arg`
+      - arg: --tls-san=10.15.18.44  # 10.15.18.44 or 192.168.100.101 or 192.168.100.207
+        nodeFilters:
+          - server:*    
+    nodeLabels:
+      - label: nodename=server0 # same as `--k3s-node-label 'foo=bar@agent:1'` -> this results in a Kubernetes node label
+        nodeFilters:
+          - server:0
+      - label: nodename=server1
+        nodeFilters:
+          - server:1
+      - label: nodename=server2
+        nodeFilters:
+          - server:2
+      - label: nodename=agent0
+        nodeFilters:
+          - agent:0
+      - label: nodename=agent1
+        nodeFilters:
+          - agent:1
+      - label: nodename=agent2
+        nodeFilters:
+          - agent:2
+
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
