@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+#BOX_IMAGE      = "ubuntu/focal64"
+BOX_IMAGE      = "hashicorp/bionic64"
+BOX_PROVISION  = "ubuntu-provision.sh"
+
+Vagrant.configure("2") do |config|
+  config.vm.box = BOX_IMAGE
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  config.vm.synced_folder   "./hlf-lab", "/hlf-lab"
+  config.vm.hostname      = "hlf-testnet"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui    = false
+    vb.memory = "2048"
+    vb.cpus   = "2"
+    vb.name   = "hlf test-network"
+  end
+
+  config.vm.provision "shell", path: "#{BOX_PROVISION}"
+end
