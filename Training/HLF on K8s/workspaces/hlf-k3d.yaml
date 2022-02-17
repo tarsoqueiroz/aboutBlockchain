@@ -1,0 +1,92 @@
+apiVersion: k3d.io/v1alpha2
+kind: Simple
+
+name: hlf
+servers: 1
+agents: 4
+image: rancher/k3s:v1.22.2-k3s2
+
+kubeAPI:
+  hostIP: "192.168.100.101"
+  hostPort: "6443" # Kubernetes API via localhost:6443
+
+ports:
+  - port: 80:80 # http via localhost:80
+    nodeFilters:
+      - loadbalancer
+  - port: 443:443 # https via localhost:443
+    nodeFilters:
+      - loadbalancer
+
+volumes:
+  - volume: /Data/Projects/Blockchain/HLFkubernetes/workspaces/nfs_share:/mnt/nfs_share/
+    nodeFilters:
+      - all
+
+labels:
+  - label: clusterrule=server
+    nodeFilters:
+      - server[*]
+  - label: clusterrule=agent
+    nodeFilters:
+      - agent[*]
+
+options:
+  k3d:
+    wait: true
+    timeout: "360s"
+    disableLoadbalancer: false
+    disableImageVolume: false
+  k3s:
+    extraServerArgs:
+      - --tls-san=192.168.100.101
+    extraAgentArgs: []
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
+
+#volumes:
+#  - volume: /tmp/tqpv/volserver0:/vol/host
+#    nodeFilters:
+#      - server[0]
+#  - volume: /tmp/tqpv/volserver1:/vol/host
+#    nodeFilters:
+#      - server[1]
+#  - volume: /tmp/tqpv/volservers:/vol/rule
+#    nodeFilters:
+#      - server[*]
+#  - volume: /tmp/tqpv/volagent0:/vol/host
+#    nodeFilters:
+#      - agent[0]
+#  - volume: /tmp/tqpv/volagent1:/vol/host
+#    nodeFilters:
+#      - agent[1]
+#  - volume: /tmp/tqpv/volagents:/vol/rule
+#    nodeFilters:
+#      - agent[*]
+#  - volume: /tmp/tqpv/volcluster:/vol/cluster
+#    nodeFilters:
+#      - all
+
+#env:
+#  - envVar: ENV_VAR_NAME=server0
+#    nodeFilters:
+#      - server[0]
+#  - envVar: ENV_VAR_NAME=server1
+#    nodeFilters:
+#      - server[1]
+#  - envVar: ENV_VAR_SERVER=true
+#    nodeFilters:
+#      - server[*]
+#  - envVar: ENV_VAR_NAME=agent0
+#    nodeFilters:
+#      - agent[0]
+#  - envVar: ENV_VAR_NAME=agent1
+#    nodeFilters:
+#      - agent[1]
+#  - envVar: ENV_VAR_SERVER=false
+#    nodeFilters:
+#      - agent[*]
+#  - envVar: ENV_VAR_CLUSTER=tqpv
+#    nodeFilters:
+#      - all

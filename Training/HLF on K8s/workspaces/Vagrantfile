@@ -1,0 +1,59 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# BOX_IMAGE             = "generic/alpine312"
+# BOX_PROVISION         = "alpine-provision.sh"
+BOX_IMAGE      = "ubuntu/focal64"
+BOX_PROVISION  = "ubuntu-provision.sh"
+NETWORK_IFACE  = "enp4s0"
+
+cluster = {
+  "hlfnode0" => { 
+    :ip => "192.168.100.50", 
+    :cpus => 2, :mem => 2048,
+    :folderhlf  => "./manager.hlf-docker-swarm", :folderfabric => "./manager.fabric-samples"
+  },
+  "hlfnode1" => { 
+    :ip => "192.168.100.51", 
+    :cpus => 2, :mem => 2048,
+    :folderhlf  => "./worker1.hlf-docker-swarm", :folderfabric => "./worker1.fabric-samples"
+  },
+  "hlfnode2" => { 
+    :ip => "192.168.100.52", 
+    :cpus => 2, :mem => 2048,
+    :folderhlf  => "./worker2.hlf-docker-swarm", :folderfabric => "./worker2.fabric-samples"
+  }
+}
+ 
+Vagrant.configure("2") do |config|
+  
+  cluster.each_with_index do |(hostname, info), index|
+
+    config.vm.define hostname do |subconfig|
+      subconfig.vm.box          = BOX_IMAGE
+      subconfig.vm.hostname     = "#{hostname}"
+      subconfig.vm.synced_folder  "#{info[:folderhlf]}", 
+                                  "/home/ubuntu/hlf-docker-swarm", 
+                                  disabled: false
+      subconfig.vm.synced_folder  "#{info[:folderfabric]}", 
+                                  "/home/ubuntu/fabric-samples", 
+                                  disabled: false
+      subconfig.vm.provision     :shell, 
+                                  path: "#{BOX_PROVISION}"
+      subconfig.vm.network        "public_network", 
+                                  bridge: "#{NETWORK_IFACE}", 
+                                  ip: "#{info[:ip]}"
+      subconfig.vm.disk          :disk, 
+                                  name: "#{hostname}-dsk-a", 
+                                  size: "5GB"
+      subconfig.vm.provider       "virtualbox" do |vbox|
+        vbox.memory             = "#{info[:mem]}"
+        vbox.cpus               = "#{info[:cpus]}"
+        vbox.name               = "hlf docker swarm #{hostname}"
+        vbox.gui                = false
+      end
+    end
+
+  end # end CLUSTER
+
+end
