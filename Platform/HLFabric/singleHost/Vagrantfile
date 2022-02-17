@@ -1,0 +1,16 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.define "hlfabric"
+  config.vm.box = "generic/ubuntu1804"
+  config.vm.hostname = "hlfabric"
+  config.vm.network "public_network", bridge: "enp4s0", ip: "192.168.100.30"
+  config.vm.synced_folder "./mount", "/home/vagrant/mount"
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "hlfabric Client Station"
+    vb.gui = false
+    vb.memory = "2048"
+  end
+#  config.vm.provision "shell", path: "provision.sh", privileged: false
+end
