@@ -515,27 +515,250 @@ You might have noticed in the *Agents Connecting* lab, there was no mention of a
 
 ## Chapter 3: Running a Network for Aries Development, Incomplete section
 
-Introduction, Incomplete1 min1 minute
-Ledgers: What You Don’t Need To Know, Incomplete2 min2 minutes
-Why Use a Distributed Ledger with Aries?, Incomplete3 min3 minutes
-Running a Local Indy Network, Incomplete4 min4 minutes
-The Indy Genesis File, Incomplete5 min5 minutes
-Resolving DIDs, Incomplete5 min5 minutes
-Knowledge Check, Incomplete4 activities
-Knowledge Check due 28 de fev. de 2022 11:41 BRT
-Summary, Incomplete1 min1 minute
+### Introduction: Chapter Overview
+
+n the last chapter, we learned all about the Aries agent architecture and the key components of an agent: the controller and framework. We also discussed common setups of agents and some basics about messaging protocols used for peer-to-peer communication. The labs in Chapter 2 demonstrated connecting two agents that didn’t use a ledger. Now that you’re getting comfortable with what an agent does and how it does it—and have seen agents at work off-ledger—let’s set the groundwork for using a distributed ledger for your development needs. We’ll even look at some alternatives to using a ledger.
+
+### Learning Objectives
+
+In this chapter, we will describe:
+
+- What you need to know and not know about ledgers in order to build an SSI application.
+- How to get a local Indy network up and running, plus other options for getting started.
+- The ledger’s genesis file—the file that contains the information necessary for an agent to connect to a specific ledger.
+
+### Ledgers: What You Don’t Need To Know
+
+Many people come to the Indy and Aries communities thinking that because the projects are "based on blockchain," that the most important thing to learn first is about the underlying blockchain. Even though their goal is to build an application for their use case, they dive into Indy, finding the guide on starting an Indy network and off they go—bumping their heads a few times on the way. Later, when they discover Aries and what they really need to do (build a controller, which is really, just an app with APIs), they discover they’ve wasted a lot of time.
+
+Don’t get us wrong. The ledger is important, and the attributes (robustness, decentralized control, transaction speed) are all key factors in making sure that the ledger your application will use is sufficient. It’s just that as an Aries agent application developer, the details of the ledger are *someone else’s problem*. There are three situations in which an organization producing self-sovereign identity solutions will need to know about ledgers:
+
+- If your organization is going to operate a ledger node (for example, a steward on the Sovrin network), the operations team needs to know how to install and maintain that node. There is no development involved in that work, just the operation of a software artifact.
+- If you are a developer who is going to contribute code to a ledger project (such as Indy) or contribute an interface to a ledger not yet supported by Aries, you need to know about the development details of that ledger.
+- If you are building a product for a specific use case, the business team must select a ledger that is capable of supporting that use case. Although there is some technical knowledge required for that, there is little developer knowledge needed—it’s more of a business question.
+
+So, assuming you are here because you are building an application, the less time you spend on ledgers, the sooner you can get to work on developing that application. For now, skip diving into Indy and use the tools and techniques outlined here. We’ll also cover some additional details about integrating with ledgers in *Chapter 8: Planning for Production, later in this course*.
+
+With that, we’ll get on with the minimum you have to know about ledgers to get started with Aries development. In the following, we assume you are building an application for running based on a Hyperledger Indy ledger.
+
+### Why Use a Distributed Ledger with Aries?
+
+Before we go further in this chapter, let’s go back to the basics and cover the purpose of a distributed ledger when using Aries. For Aries agents that comply with Aries Interop Profile (AIP) 1.0 and AIP 2.0, the primary purpose of the ledger is to be a place for a verifiable credential issuer to publish cryptographic keys and credential metadata so that a prover can produce a presentation that a verifier can cryptographically verify. In theory, such information could be digitally published in other ways, but the attributes of a ledger are ideal for this purpose:
+
+- Data written to a distributed ledger (such as Indy) is immutable—it can’t ever be changed.
+- Ledger data can’t be removed, so, for example, the issuer cannot remove the data (public keys and credential metadata) and "break" (make unverifiable) the credentials issued to holders.
+- Multiple parties (that is, validators or miners) reach consensus on what is to be written to a ledger, preventing the data from being maliciously altered before writing.
+- The data is replicated across a set of independent parties and as such is highly available.
+
+> **NOTE:** *Always remember that with verifiable credentials in general, and specifically with Aries, no private data goes on the ledger, and the data written to the ledger is extremely limited to the verifiable credential use case.* ***Credentials are NEVER written to the ledger.***
+
+That discussion covers why distributed ledgers are commonly used for verifiable credential implementations such as Aries. However, publishing DIDs need not always be to a distributed ledger. There are DID methods that enable publishing DIDs that can be used with Aries agents if you are using other than the Indy AnonCreds verifiable credential format. The limitation about requiring an Indy ledger for Indy AnonCreds is because of the additional ledger objects (e.g., schema, credential definitions, etc.) involved that require the use of an Indy ledger.
+
+The following are some DID methods that you might run into when doing Aries development:
+
+- The ["did:web" DID method](https://w3c-ccg.github.io/did-method-web/) is a non-ledger alternative for an organization to publish DIDs using their domain name’s DNS record—the same place where they publish, for example, the location of their email and web server. It’s easy to update a DNS record, and we trust the DNS record for that data, why not for the organization’s DID?
+  - The problem with this approach is that it is easy for the organization to remove the data at any time, breaking the "immutability" goal for verifiable credentials.
+  - On the other hand, (almost) every organization has a domain name and DNS record, so it’s public and really easy to publish DIDs, so it might be a good stopgap measure.
+- A developer might use the ["did:github" DID method](https://github.com/decentralized-identity/github-did/blob/master/docs/did-method-spec/index.md) as a quick’n’dirty way to publish a DID for development purposes.
+  - Like "did:web," the DID is not immutable and implies even less trust than "did:web," but for development purposes it might be useful.
+- A new DID method being developed by SecureKey, the maintainers of Aries Framework Go, is the ["did:orb" DID method](https://trustbloc.github.io/did-method-orb/) which uses a protocol called ActivityPub (and other technologies) to enable an entity to publish their DIDs in a trusted way without requiring a distributed ledger.
+
+There are a lot of other DID methods defined in the W3C DID Standard registry. In theory, for non-Indy verifiable credential purposes, any of them could be used. If you plan to use other than Indy, we recommend you do some research on the DID methods to gain confidence that they will still be around in a few years. Some of the more interesting DID methods are ones that are rooted in the major permissionless blockchains such as Bitcoin and Ethereum, as well as ones built on private blockchains such as Hyperledger Fabric.
+
+While the published DIDs and other objects on a ledger are mostly used for the processing of verifiable credentials and verifiable presentations, the public DIDs can also be used for connecting and messaging with an organizational Aries agent. Some organizations use a public DID as the basis for all their connections with other agents, instead of using peer DIDs for that purpose.
+
+We’ll touch on the use of other DID methods later in this chapter. For now though, we’ll focus on running (or not) an Indy network that we’ll use for labs in the later chapters.
+
+### Running a Local Indy Network
+
+The easiest way to get a local Indy network running is to use [von-network](https://github.com/bcgov/von-network), a pre-packaged Indy network built by the Government of British Columbia’s (BC) [VON Team](https://vonx.io/). In addition to providing a way to run a minimal four-node Indy network using docker containers with just two commands, von-network includes:
+
+- A well maintained set of versioned Indy container images.
+- A web interface allowing you to browse the transactions on the ledger.
+- An API for accessing the network’s genesis file (see below).
+- A web form for registering DIDs on the network.
+- Guidance for running a network in a cloud service such as Amazon Web Service or Digital Ocean.
+
+The [VON container images](https://hub.docker.com/r/bcgovimages/von-image/) maintained by the BC Gov team are updated with each release of Indy, saving others the trouble of having to do that packaging themselves. A lab focused on running a von-network instance will be provided at the end of this chapter.
+
+### Or, Don’t Run a Network for Aries Development
+
+What is easier than running a local network with von-network? How about not running a local network at all!
+
+Another way to do development with Indy is to use a public Indy network sandbox. With a sandbox network, each developer doesn’t run their own local network, they access one that is running remotely. With this approach, you can run your own, or even easier, use the BC Government’s BCovrin (pronounced "Be Sovereign") networks (dev and test). As of writing this course, the networks are open to anyone to use and are pretty reliable (although no guarantees!). They are rarely reset, so even long lasting tests can use a BCovrin network.
+
+![Bulb](./images/LFS173X_CourseGraphics-09.png)
+
+An important thing that a developer needs to know about using a public sandbox network is to make sure you create unique credential definitions on every run by making sure issuer DIDs are different on every run. To get into the weeds a little:
+
+- Indy DIDs are created from a seed, an arbitrary 32-character string. A given seed passed to Indy for creating a DID will always return the same DID, public key and private key.
+- Historically, Indy/Aries developers have configured their apps to use the same seeds in development so that the resulting DIDs are the same every time. This works if you restart (delete and start fresh) the ledger and your agent storage on every run, but causes problems when using a long lasting ledger.
+  - Specifically, a duplicate credential definition (same DID, name and version) to one already on a ledger will fail to be written to the ledger.
+- The best solution is to configure your application so a randomly generated seed is used in development such that the issuer’s DID is unique on every run so that the credential definition name and version can remain the same on every run.
+
+> **NOTE:** *This is important for development. We’ll talk about some issues related to going to production in Chapter 8: Planning for Production, where the problem is reversed—we MUST use the same DID and credential definition every time we start an issuer agent.*
+
+In the labs in this course, you will see examples of development agents running against both local and remote sandbox Indy networks.
+
+### Proof of Concept Networks
+
+When you get to the point of releasing a proof of concept (PoC) application "into the wild" for multiple users to try, you will want to use an Indy network that all of your PoC participants can access, especially if the PoC includes a third party mobile wallet application. As well, you will want that environment to be stable such that it is always available when it’s needed. We all know about how mean the demo gods can be!
+
+Some of the factors related to production applications (covered in *Chapter 8: Planning for Production*) will be important for a PoC. For such a test, a locally running network is not viable and you must run a publicly accessible network. For that, you have three choices:
+
+1. The BCovrin sandbox test network is available for long term testing and is supported by many of the better known mobile wallet applications.
+1. The Sovrin Foundation, operates two non-production networks:
+  - Builder Net: For active development of your solution.
+  - Staging Net: For proofs of concept, demos, and other non-production but stable use cases.
+> **NOTE:** *Non-production Sovrin networks are permissioned, which means that you have to do a bit more to use those—get a special "Endorser" DID that allows writing to the ledger and agreeing to a "Transaction Author Agreement" as you write to the ledger. We’ll cover these issues a bit in the next section of this chapter and in Chapter 8: Planning for Production.*
+3. You may choose to run your own network on something like Amazon Web Service or Azure. Basically, you would be running your own version of "BCovrin."
+
+Running your own network gives you the most control (and is pretty easy if you use [von-network](https://github.com/bcgov/von-network)), so that might seem at first glance to be the preferred option. However, that means extra work for you running the network, and if you need to interoperate with agents from other vendors (such as mobile wallet apps), the distributed ledger you choose must be one that is supported by all agents. That often makes either or both of the BCovrin and Sovrin Foundation networks as the best/only options.
+
+### The Indy Genesis File
+
+In working with an Indy network, the ledger’s **genesis file** contains the information necessary for an agent to connect to that ledger. Developers new to Indy, particularly those who try to run their own network, often have trouble with the genesis file, so we’ll cover it here.
+
+The genesis file contains information about the physical endpoints (IP addresses and ports) for some or all of the nodes in the ledger pool, as well as the cryptographic material necessary to securely communicate with those nodes. Each genesis file is unique to its associated ledger and must be available to an agent that wants to connect to the ledger. It is called the genesis file because it has information about the genesis (first) transactions on the ledger. Recall that a core concept of blockchain is that the blocks of the chain are cryptographically tied to all the blocks that came before it, right back to the first (genesis) block on the chain.
+
+The genesis file for Indy **sandbox** ledgers is (usually) identical, with the exception of the endpoints for the ledger—the endpoints must match where the nodes of the ledger are physically running. The cryptographic material is the same for sandbox ledgers because the genesis transactions are all the same, generated from the same seeds. Those transactions:
+
+- Create a trustee **endorser** DID on the ledger that has full write permission on the ledger.
+- Permission the nodes of the ledger to process transactions.
+
+Thus, if you get the genesis file for a ledger and you know the "magic" seed for the DID of the [trustee](https://docs.google.com/document/d/1gfIz5TT0cNp2kxGMLFXr19x1uoZsruUe_0glHst2fZ8/edit#heading=h.xs7z6weav1fw) (the identity owner entrusted with specific identity control responsibilities by another identity owner or with specific governance responsibilities by a governance framework), you can access and write to that ledger. That’s great for development and it makes deploying proof of concepts easy. Configurations such as von-network take advantage of that consistency, using the "magic" seed to bootstrap the agent. For agents that need to write to the network (at least credential issuers, and possibly others), there is usually an agent provisioning step where the endorser DID is used to write a DID for the issuer that has sufficient write capabilities to do whatever else it needs to do. This is possible because the seed used to create the endorser DID is well known. In case you are wondering, the magic seed is:
+
+- `000000000000000000000000Trustee1`
+
+> **NOTE:** *For information about this, see this [great answer](https://stackoverflow.com/questions/59089178/hypelerdger-indy-node-seed-value) on Stack Overflow about where it comes from.*
+
+As we’ll see in *Chapter 8: Preparing for Production*, the steps are conceptually the same when you go to production—you use a transaction endorser that has network write permissions to create your DID. However, you’ll need to take additional steps when using a permissioned test or production ledger (such as the Sovrin Foundation’s StagingNet or MainNet) because you won’t know the seed of any endorsers on the network. Connecting to and reading from a production ledger is just as easy as a sandbox ledger—you get the network’s genesis file and pass that to your agent. However, being able to write to the network is more complicated because you don’t know the "magic DID" that enables full write access.
+
+![Bulb](./images/LFS173X_CourseGraphics-09.png)
+
+By the way, the typical problems that developers have with genesis files is either they try to run an agent without a genesis file, or they use a default genesis file that has not had the endpoints updated to match the location of the nodes in their network. It’s part of why using von-network is so helpful; it takes care of those details for you, dynamically making the genesis file available to you based on how the network was started.
+
+### Genesis File Handling in Aries Frameworks
+
+Most Aries frameworks make it easy to pass to the agent the genesis file for the network to which it will connect. For example, we’ll see from the labs in the next chapter that to connect an instance of an ACA-Py agent to a ledger you use command line parameters to specify either a file name for a local copy of the genesis file, or a URL that is resolved to fetch the genesis file. The latter is often used by developers that use the von-network because each von-network instance has a web server deployed with the network and provides the URL for the network’s genesis file. The file is always generated after deployment, so the endpoints in the file are always accurate for that network.
+
+### Lab: Running a von-network Instance
+
+Please follow this [link](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS173xV2/vonNetwork.md) to run a lab in which you will start a von-network, browse the ledger, look at the genesis file and create a DID.
+
+> [General Instructions for Running Labs](https://github.com/cloudcompass/ToIPLabs/blob/main/docs/LFS173xV2/RunningLabs.md)
+>
+> [Tutorial: Using VON Network](https://github.com/bcgov/von-network/blob/master/docs/UsingVONNetwork.md)
+
+### Accessing Multiple Indy Networks
+
+In the "genesis file" discussions before the lab we talked about loading the genesis file for an Aries agent deployment, allowing the agent to connect with, read and possibly write to a single Indy ledger instance. And, until recently, that has been sufficient. With small use cases each with relatively few participants, one network was (sort of) enough (if we ignore developers that were using development, test and production ledgers…). However, as more production networks become available, and Aries agents (especially Aries mobile wallet apps) are used in different use cases, it has become obvious that Aries agents need to access more than one ledger at a time. A person might be issued verifiable credentials from a university using the Indicio MainNet, and a government using the Sovrin MainNet and it all has to work smoothly.
+
+Early Aries wallets allowed the user to manually switch ledgers in the settings, but that’s a pretty bad user experience, especially if they have to keep switching back and forth. Worse, there is no way to construct a presentation that uses the two credentials at the same time.
+
+There is a "fix" for this issue in some Aries implementations, with more on the way as this course is updated (mid 2021). Aries agents can be configured to load genesis files for, and connect to, all needed Indy networks. While an issuer agent will likely only write to one of the loaded networks, when resolving a given Indy identifier (a DID or ledger object ID), the agent will check for the object on each of the connected networks. The process has proven to work pretty well, with the caveat that the resolver might find the same object on multiple networks and so need some form of collision handling if the object is on more than one ledger. A future evolution will embed in all Indy identifiers a reference to the ledger on which the object resides, eliminating the possibility of a collision.
+
+The good news for you, the Aries developer, is that for the most part, the complexity of connecting to and resolving objects on multiple Indy ledgers will be handled by the Aries framework you are using.
+
+### Resolving DIDs
+
+As discussed earlier in this chapter, Indy is not the only ledger around and Indy DIDs are not the only DIDs used in Aries. In this section we’ll cover how Aries handles other ledgers and DID methods.
+
+As you (should) know by now, DIDs are resolved in a similar fashion to web URLs, returning a DID document (DIDDoc) instead of a web page. Rather than a single DNS-based process for finding the resource associated with a URL, DID identifiers embed a reference to a **DID method** in each DID. In turn, each DID method has an associated specification that is implemented in software to resolve the DID and find the associated DIDDoc. This picture below shows the DID resolution process.
+
+An application (such as an Aries agent) needs to resolve a DID. They call a resolver ("Universal Resolver" in the picture below), which figures out what DID method is being used. Remember that the DID method is part of the DID, right after "did:". From that the resolver decides on the driver to use—there’s usually a driver per DID method, and the DID method knows how to interact with the distributed ledger (or other storage location) to get and return the DIDDoc associated with the DID.
+
+![The DID Resolution Process](./images/LFS173X_CourseGraphics-10.png)
+
+*The DID Resolution Process*
+
+This all sounds good, until you realize that the current (June 2021) [W3C DID Registry](https://w3c.github.io/did-spec-registries/#did-methods) contains 104 DID methods and the list is still growing. With each having their own DID method specification, that means a **universal DID resolver** that can resolve every DID method must support 104 drivers. This is exactly what the open source **DIF universal resolver** does (more or less). Each organization that adds a DID method to W3C DID Method Registry also implements a driver for their DID method and adds it to the DIF universal resolver. An instance of the universal resolver is deployed by DIF as a central web service with APIs that can be used for resolving (in theory, at least) any DID that has been published. And anyone else can deploy their own version of a universal resolver.
+
+That paragraph leads us to a couple of editorial comments:
+
+- First, not all 104 (and counting!) DID methods will last. The general expectation of the community is that a handful of DID methods will survive and the rest will quietly fade away.
+- Second, while an interesting and useful tool for developers, a centralized web service such as the DIF universal resolver is not a particularly strong foundation on which to build a scalable, production layer of trust for the Internet. There’s a safer way.
+
+Let’s look at how DID resolution is handled in Aries.
+
+### Aries DID Resolvers
+
+In early AIP 1.0 Aries implementations, only a couple of DID methods were supported (specifically Indy and peer DIDs) and they were used only in a few specific scenarios. As a result, DID resolution was handled wherever needed via direct calls to each method. It was workable for the use cases we had, but was not really meeting the goal of Aries being "ledger agnostic."
+
+The "new" approach to Aries DID resolution is a generic "resolveDID" call in each Aries deployment that takes DIDs of any method and returns (if available) a DIDDoc for the DID via a set of resolver plugins. The call determines the DID’s method and checks if there is a resolver plugin available for that DID method. If so, the resolver plugin is called and the result returned; if not, the resolution fails. The term "plugin" is used loosely here; plugins might be either added at compile time or loaded at runtime depending on the framework. Either way, a generic interface to the resolver is used. Each supported DID method is handled in one of two ways:
+
+- The resolver may be a local plugin run within the Aries deployment.
+- The resolver might be part of an external "universal resolver."
+
+![Aries Agent DID Resolution: Local and External](./images/LFS173X_CourseGraphics-07.png)
+
+*Aries Agent DID Resolution: Local and External*
+
+The idea (shown in the diagram above) is that an Aries implementation will use faster, local instances for commonly used DIDs (in this case, "did:sov", "did:peer", "did:key" and "did:web") and fallback to a universal resolver for "obscure" DIDs that it might need to support. The external "universal resolver" could be the public DIF universal resolver (although that’s not recommended for production), or more likely, a local deployment of the DIF universal resolver, including only the DID methods of interest.
+
+Using such an approach, an Aries deployment can have an easily configured policy on what DIDs to resolve (or not) and how—via a built-in plugin or external resolver.
+
+The built in DID resolvers in Aries are likely "did:peer," "did:key" and the ledger that the Aries deployment writes to, such as an Indy ledger. Aries implementations that don’t support Indy, such as those based on Aries Framework Go, will likely have favored DID methods and use an external DID resolver for Indy DIDs.
+
+### The did:key DID Method
+
+A special DID method that we haven’t talked about yet but that deserves mention is "did:key." did:key is similar to did:peer in that it is not a DID that is published on a ledger. Rather, it is a way to represent a single, public key as a DID. It’s not as capable as a did:peer (for example, a did:key cannot have an endpoint, and its key cannot be rotated), but it is useful in a number of Aries RFCs.
+
+The details of using the did:key method are provided in the [did:key specification](https://w3c-ccg.github.io/did-method-key/), but the quick version is as follow:
+
+- Create a key pair of a known key type (e.g., Ed25519).
+- Encode (using standards "multibase" and "multicodec" per the did:key specification) the public key and its type, and then prefix the result with "did:key:" to create a DID that looks like this: **`did:key:z6MkpTHR8VNsBxYAAWHut2Geadd9jSwuBV8xRoAnwWsdvktH`**
+- To "resolve" the DID, reverse the encoding (e.g., remove the "did:key:" prefix and decode the multibase/multicodec string) to get back the public key and its type.
+- Generate a DIDDoc by merging the three data values (the DID, public key and signature type) into a fixed template.
+  - Where possible, such as with an Ed25519 verification key, generate a key agreement key (for encryption) from the verification key and include in the DIDDoc a key agreement block.
+  - Here’s a link to a [sample did:key DIDDoc](https://w3c-ccg.github.io/did-method-key/#example-2-a-did-document-derived-from-a-did-key).
+Although the did:key template process is based on some pretty simple text processing, the representation is powerful, allowing an otherwise plain old public key string to be handled in the same way as any other DID.
+
+### Lab: Aries and Universal DID Resolvers
+
+Enough on DID resolution, let's try some hands-on resolving.
+
+Please follow this [link](https://github.com/cloudcompass/ToIPLabs/blob/master/docs/LFS173xV2/didResolvers.md) to run a lab in which you try out a couple of DID resolvers, including one built into an instance of ACA-Py.
+
+> [Lab: Resolving DIDs Universally](https://github.com/cloudcompass/ToIPLabs/blob/main/docs/LFS173xV2/didResolvers.md)
+>
+> [Universal Resolver](https://github.com/decentralized-identity/universal-resolver/)
+
+### Summary
+
+The main point of this chapter is to get you started in the right spot: you don’t need to dig deep into distributed ledger technology in order to develop SSI applications. By now, you should be aware of the options running an Indy network and know the importance of the genesis file for your particular network. We also covered some of the new options for publishing DIDs to other than a Hyperledger Indy network when not using Indy AnonCreds verifiable credentials. If you are using AnonCreds, you will want to stick to using an Indy network. Finally, we went over a powerful DID method that doesn’t use a ledger at all and makes plain public keys way more useful, the "did:key" DID method.
+
+In the last chapter, we covered the architecture of an agent and demonstrated connecting two agents that didn’t use a ledger. In this chapter, we covered running a ledger. So, in the next chapter, let’s combine the two and look at running agents that connect to a ledger.
 
 ## Chapter 4: Developing Aries Controllers, Incomplete section
 
-Introduction, Incomplete1 min1 minute
-Aside: The Term "Wallet", Incomplete1 min1 minute
-Agent Start Up, Incomplete6 min6 minutes
-How Aries Protocols Impact Controllers, Incomplete10 min10 minutes
-Building Your Own Controller, Incomplete1 min1 minute
-Controllers for Other Frameworks, Incomplete3 min3 minutes
-Knowledge Check, Incomplete4 activities
-Knowledge Check due 6 de mar. de 2022 20:25 BRT
-Summary, Incomplete1 min1 minute
+### Introduction
+
+
+### Aside: The Term "Wallet"
+
+
+### Agent Start Up
+
+
+### How Aries Protocols Impact Controllers
+
+
+### Building Your Own Controller
+
+
+### Controllers for Other Frameworks
+
+
+### Summary, Incomplete1 min1 minute
+
+
+
+
+
+
+
+
 
 ## Chapter 5. Digging Deeper—The Aries Protocols, Incomplete section
 
