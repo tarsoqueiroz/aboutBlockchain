@@ -1,21 +1,90 @@
 #!/usr/bin/env bash
 
-# Update & upgrade instalation
-apk update
-apk upgrade
+# # Updating OS and useful tools install
+update_os(){  
+  # Set branch, update & upgrade repositories
+  {
+    echo "https://sjc.edge.kernel.org/alpine/v3.15/main"
+    echo "https://sjc.edge.kernel.org/alpine/v3.15/community"
+  } > "/etc/apk/repositories"
+  apk update
+  #apk upgrade
 
-# Installing Docker
-apk add docker docker-compose
-addgroup vagrant docker
-rc-update add docker default
-rc-service docker restart
+  apk add \
+          gcompat \
+          nano \
+          gpg \
+          gpg-agent \
+          gnupg \
+          ca-certificates
+  # gnupg-agent \
+  # lsb-release \
+  # apt-transport-https \
+  # ca-certificates \
+  # software-properties-common \
+}
 
-# Installing languages & tools
-apk add nano
-# apk add git
-# apk add go python2 nodejs npm 
+# install git
+install_git(){
+  apk add git
+}
+# install curl
+install_curl(){
+  apk add curl
+}
 
-# if ! [ -L /var/www ]; then
-#   rm -rf /var/www
-#   ln -fs /vagrant /var/www
-# fi
+
+# # Installing Docker
+install_docker(){
+  apk add docker docker-compose
+  addgroup vagrant docker
+  rc-update add docker default
+  rc-service docker restart
+
+#     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+#     sudo apt-key fingerprint 0EBFCD88
+#     sudo add-apt-repository \
+#         "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+#         $(lsb_release -cs) \
+#         stable"
+#     sudo apt-get update
+#     sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+#     sudo newgrp docker
+#     sudo usermod -aG docker vagrant
+#     sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#     sudo chmod +x /usr/local/bin/docker-compose
+#     sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+}
+
+# install golang
+install_golang(){
+  apk add go
+  mkdir /home/vagrant/go
+  chown vagrant:vagrant -R /home/vagrant/go
+}
+# install node
+install_node(){
+  apk add nodejs npm
+}
+# install python 2.7
+install_python27(){
+  apk add python2
+}
+
+update_os
+
+install_git
+install_curl
+
+install_docker
+
+install_golang
+install_node
+install_python27
+
+touch "/home/vagrant/.bashrc"
+{
+  echo "alias ll='ls -lah'"
+  echo "export GOPATH=/home/vagrant/go"
+  echo "export PATH=$PATH:/usr/local/go/bin:/home/vagrant/bin"
+} >> "/home/vagrant/.profile"
