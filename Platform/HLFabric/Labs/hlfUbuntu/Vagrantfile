@@ -13,7 +13,8 @@ BOX_PROVISION  = "ubuntu-provision.sh"
 Vagrant.configure("2") do |config|
   config.vm.box = BOX_IMAGE
   config.vm.box_version = BOX_VERSION
-
+  config.vm.box_download_insecure = true
+  
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
