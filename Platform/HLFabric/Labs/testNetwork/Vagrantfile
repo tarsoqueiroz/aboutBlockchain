@@ -6,13 +6,13 @@
 # BOX_VERSION    = ""
 # BOX_IMAGE      = "ubuntu/bionic64"
 # BOX_VERSION    = "20220213.0.0"
-BOX_IMAGE      = "ubuntu/focal64"
-BOX_VERSION    = "20220215.1.0"
-BOX_PROVISION  = "ubuntu-provision.sh"
-# ## Alpine base OS
-# BOX_IMAGE      = "generic/alpine312"
-# BOX_VERSION    = "3.6.8"
-# BOX_PROVISION  = "alpine-provision.sh"
+# BOX_IMAGE      = "ubuntu/focal64"
+# BOX_VERSION    = "20220215.1.0"
+# BOX_PROVISION  = "ubuntu-provision.sh"
+## Alpine base OS
+BOX_IMAGE      = "generic/alpine312"
+BOX_VERSION    = "3.6.8"
+BOX_PROVISION  = "alpine-provision.sh"
 
 Vagrant.configure("2") do |config|
   config.vm.box = BOX_IMAGE
