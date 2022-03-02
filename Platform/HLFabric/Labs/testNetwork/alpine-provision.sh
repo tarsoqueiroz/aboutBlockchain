@@ -3,12 +3,13 @@
 # # Updating OS and useful tools install
 update_os(){  
   # Set branch, update & upgrade repositories
+  apk add -X http://dl-cdn.alpinelinux.org/alpine/v3.14/main -u alpine-keys
   {
     echo "https://sjc.edge.kernel.org/alpine/v3.15/main"
     echo "https://sjc.edge.kernel.org/alpine/v3.15/community"
   } > "/etc/apk/repositories"
   apk update
-  #apk upgrade
+  apk upgrade
 
   apk add \
           gcompat \
