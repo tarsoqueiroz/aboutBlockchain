@@ -649,6 +649,8 @@ Please follow this [link](https://github.com/cloudcompass/ToIPLabs/blob/master/d
 > [General Instructions for Running Labs](https://github.com/cloudcompass/ToIPLabs/blob/main/docs/LFS173xV2/RunningLabs.md)
 >
 > [Tutorial: Using VON Network](https://github.com/bcgov/von-network/blob/master/docs/UsingVONNetwork.md)
+>
+> [Using the containerized indy-cli](https://github.com/bcgov/von-network/blob/master/docs/Indy-CLI.md)
 
 ### Accessing Multiple Indy Networks
 
