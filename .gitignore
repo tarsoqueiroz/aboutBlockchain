@@ -16,5 +16,7 @@
 
 *node_modules/*
 .vagrant
-hlfabric
 *.log
+hlfabric
+hlf-scripts
+hlf-go
