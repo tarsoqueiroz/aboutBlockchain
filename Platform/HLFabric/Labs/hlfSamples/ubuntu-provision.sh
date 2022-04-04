@@ -78,10 +78,10 @@ install_python27
 
 # install_zsh
 
-# mkdir /home/vagrant/go
+mkdir -p /home/vagrant/go/bin
 chown vagrant:vagrant -R /home/vagrant/go
 touch "/home/vagrant/.bashrc"
 {
     echo "export GOPATH=/home/vagrant/go"
-    echo "export PATH=$PATH:/usr/local/go/bin:/home/vagrant/bin"
+    echo "export PATH=$PATH:/usr/local/go/bin:/home/vagrant/go/bin"
 } >> "/home/vagrant/.bashrc"
