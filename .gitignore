@@ -17,6 +17,7 @@
 node_modules/
 .vagrant
 *.log
+
 hlf.go/
 
 .git/
