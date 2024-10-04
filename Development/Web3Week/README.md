@@ -418,4 +418,31 @@ Faça a reclamação das apostas usando as diferentes contas e verifique:
 - contabilizar total de apostadores em cada candidato;
 - funções administrativas para permitir trocar foto e nome dos candidatos.
 
-## 
+## Polygon
+
+Usar a rede de testes da Polygon:
+
+**Testnet**: `https://amoy.polygonscan.com/`
+
+- Network Name: POLYGON AMOY TESTNET
+- RPC URL: https://rpc-amoy.polygon.technology/
+- Chain ID: 80002
+- Currency Symbol: POL
+- Block Explorer URL: https://www.oklink.com/amoy
+
+**Produção**: `https://polygonscan.com/`
+
+- Network Name: Polygon Mainnet
+- RPC URL: https://polygon-rpc.com/
+- Chain ID: 137
+- Currency Symbol: MATIC
+- Block Explorer URL: https://polygonscan.com/
+
+## Contrato na Testnet
+
+- BetCandidate: `0x9F22C5A67A16e2dc1A7f23B85DEdb919322E680d`
+- Account: `0x3dd9191B08aCE5842B9d2E01E775B7Ef360dDb7F`
+
+## Dapp
+
+...em 24min da aula 2
