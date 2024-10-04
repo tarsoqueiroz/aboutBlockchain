@@ -4,7 +4,9 @@ Aprenda em uma semana como programar aplicações para blockchain e torne-se um 
 
 > [Github](https://github.com/luiztools-cursos/web3-week-5)
 
-Senha1: SMARTCONTRACT
+- Senha 1: `SMARTCONTRACT`
+- Senha 2: `BLOCKCHAIN`
+- Senha 3: `JAVASCRIPT`
 
 ## Criando o contrato BetCandidate
 
@@ -408,7 +410,7 @@ Faça a reclamação das apostas usando as diferentes contas e verifique:
 - No `claim` se foi com sucesso (apostou no candidato vencedor) ou não;
 - Em `allBets` para cada conta de apostador, se o valor em `claimed` corresponde ao percentual segundo o taxa correpondente da aposta feita pelo total apostado no vencedor.
 
-## Desafios
+## Desafios para Smartcontract
 
 - não permitir apostar depois de uma data x;
 - não sacar comissão no finish, mas sim em uma função separada;
@@ -446,3 +448,13 @@ Usar a rede de testes da Polygon:
 ## Dapp
 
 ...em 24min da aula 2
+
+## Desafios para o Dapp
+
+- configurar MetaMask para outra rede, obter moedas dela e fazer deploy lá;
+- fazer verificação do contrato no block explorer;
+- fazer uma página Sobre explicando as regras da disputa;
+- ajustar tela de bet de acordo com mudanças dos desafios 1;
+- colocar imagens nos botões de aposta e outras customizações menores de front;
+
+## Fechando app
